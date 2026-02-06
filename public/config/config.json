@@ -1,18 +1,18 @@
 {
-  "CONTRACT_ADDRESS": "0x33cf33Fc6caB4Dd4462b94A70C6d328CC0d35F5B",
+  "CONTRACT_ADDRESS": "0xBD29d460a390B4Da8C1b7FAD160f2587E8AEB811",
   "SCAN_LINK": "https://etherscan.io/address/0x33cf33Fc6caB4Dd4462b94A70C6d328CC0d35F5B",
   "NETWORK": {
     "NAME": "Ethereum",
     "SYMBOL": "ETH",
-    "ID": 1
+    "ID": 11155111
   },
-  "NFT_NAME": "Mechibis",
-  "SYMBOL": "MECHIBIS",
-  "MAX_SUPPLY": 1500,
-  "WEI_COST": 19000000000000000,
-  "DISPLAY_COST": 0.019,
+  "NFT_NAME": "Orion Wars",
+  "SYMBOL": "ORIONWARS",
+  "MAX_SUPPLY": 1111,
+  "WEI_COST": 9000000000000000,
+  "DISPLAY_COST": 0.009,
   "GAS_LIMIT": 285000,
   "MARKETPLACE": "Opensea",
-  "MARKETPLACE_LINK": "https://opensea.io/collection/mechibisgame",
+  "MARKETPLACE_LINK": "https://opensea.io/collection/",
   "SHOW_BACKGROUND": true
 }
