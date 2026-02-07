@@ -1,10 +1,10 @@
 {
-  "CONTRACT_ADDRESS": "0xBD29d460a390B4Da8C1b7FAD160f2587E8AEB811",
-  "SCAN_LINK": "https://etherscan.io/address/0x33cf33Fc6caB4Dd4462b94A70C6d328CC0d35F5B",
+  "CONTRACT_ADDRESS": "",
+  "SCAN_LINK": "https://etherscan.io/address/",
   "NETWORK": {
     "NAME": "Ethereum",
     "SYMBOL": "ETH",
-    "ID": 11155111
+    "ID": 1
   },
   "NFT_NAME": "Orion Wars",
   "SYMBOL": "ORIONWARS",

@@ -7,6 +7,7 @@ import styled, { keyframes } from "styled-components";
 import ReactDOM from "react-dom";
 import Countdown from "react-countdown";
 import ReactGA from "react-ga4";
+import WhitelistChecker from "./components/WhitelistChecker";
 
 ReactGA.initialize("G-CLEY5YQ96C");
 
@@ -533,7 +534,7 @@ const RoundItem = styled.div`
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 15px 20px;
   background: ${props => props.active ? 'linear-gradient(135deg, rgba(15, 25, 60, 0.98) 0%, rgba(25, 40, 90, 0.98) 100%)' : 'linear-gradient(135deg, rgba(10, 17, 40, 0.7) 0%, rgba(15, 25, 50, 0.7) 100%)'};
@@ -557,21 +558,22 @@ const RoundCheckIcon = styled.div`
   background: ${props => {
     if (props.status === 'ended') return 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)';
     if (props.active) return 'linear-gradient(135deg, #00a0ff 0%, #00e0ff 100%)';
-    return 'linear-gradient(135deg, #667788 0%, #556677 100%)';
+    return 'linear-gradient(135deg, #505560 0%, #3d4148 100%)';
   }};
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 5px;
   box-shadow: ${props => {
     if (props.status === 'ended') return '0 1px 5px rgba(255, 0, 0, 0.3)';
     if (props.active) return '0 2px 10px rgba(0, 150, 255, 0.4), 0 0 15px rgba(0, 212, 255, 0.2)';
-    return '0 1px 5px rgba(100, 120, 140, 0.3)';
+    return '0 1px 4px rgba(0, 0, 0, 0.2)';
   }};
   border: 2px solid ${props => {
     if (props.status === 'ended') return 'rgba(255, 100, 100, 0.6)';
     if (props.active) return 'rgba(0, 212, 255, 0.9)';
-    return 'rgba(255, 200, 100, 0.6)';
+    return 'rgba(120, 130, 145, 0.4)';
   }};
 
   &::after {
@@ -580,18 +582,24 @@ const RoundCheckIcon = styled.div`
       if (props.active) return "'✓'";
       return "'⏳'";
     }};
-    color: white;
+    color: ${props => {
+      if (props.status === 'ended') return 'white';
+      if (props.active) return 'white';
+      return 'rgba(160, 170, 185, 0.85)';
+    }};
     font-weight: bold;
-    font-size: 18px;
-    text-shadow: ${props => props.active ? '0 0 8px rgba(255, 255, 255, 0.8)' : '0 0 4px rgba(255, 255, 255, 0.4)'};
+    font-size: ${props => props.status === 'upcoming' ? '16px' : '18px'};
+    text-shadow: ${props => props.active ? '0 0 8px rgba(255, 255, 255, 0.8)' : 'none'};
+    filter: ${props => props.status === 'upcoming' ? 'grayscale(0.3)' : 'none'};
   }
 
   @media (max-width: 768px) {
     width: 25px;
     height: 25px;
+    margin-top: 3px;
     
     &::after {
-      font-size: 14px;
+      font-size: ${props => props.status === 'upcoming' ? '13px' : '14px'};
     }
   }
 `;
@@ -723,6 +731,47 @@ const PreRoundCountdown = styled.div`
     .countdown-timer {
       gap: 15px;
     }
+  }
+`;
+
+const WhitelistCheckButton = styled.button`
+  padding: 12px 24px;
+  margin-top: 15px;
+  border-radius: 14px;
+  border: 2px solid rgba(0, 255, 136, 0.7);
+  background: linear-gradient(135deg, rgba(0, 180, 100, 0.9) 0%, rgba(0, 220, 130, 0.9) 100%);
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: "Exo 2", "Font2", sans-serif;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(0, 255, 170, 0.6), 0 0 20px rgba(0, 200, 130, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.3), inset 0 0 12px rgba(0, 200, 100, 0.05);
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(0, 220, 130, 0.95) 0%, rgba(0, 255, 150, 0.95) 100%);
+    border: 2px solid rgba(0, 255, 170, 1);
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(0, 255, 200, 0.8), 0 0 30px rgba(0, 255, 170, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 170, 0.5), 0 0 35px rgba(0, 255, 136, 0.3), inset 0 0 18px rgba(0, 255, 170, 0.15);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    background: linear-gradient(135deg, rgba(0, 120, 70, 0.95) 0%, rgba(0, 180, 100, 0.95) 100%);
+    box-shadow: 0 0 10px rgba(0, 200, 100, 0.3);
+    border: 2px solid rgba(0, 220, 130, 0.8);
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 10px 18px;
+    letter-spacing: 1.5px;
+    margin-top: 12px;
   }
 `;
 
@@ -1091,6 +1140,7 @@ function App() {
     targetRound: 1,
     isWaitingForStart: true
   });
+  const [showWhitelistChecker, setShowWhitelistChecker] = useState(false);
   const [CONFIG, SET_CONFIG] = useState({
     CONTRACT_ADDRESS: "",
     SCAN_LINK: "",
@@ -1118,7 +1168,7 @@ function App() {
   
   // TEST VALUES (remove after testing):
   const ROUND_TIMES = {
-    round1: new Date('2026-02-07T20:38:00Z'), // TEST: 6 Feb 2026 18:05 UTC
+    round1: new Date('2026-02-07T20:17:00Z'), // TEST: 6 Feb 2026 18:05 UTC
     round2: new Date('2026-02-07T20:39:00Z'), // TEST: 6 Feb 2026 18:10 UTC (5 min after round1)
     round3: new Date('2026-02-07T20:40:00Z'), // TEST: 6 Feb 2026 18:15 UTC (5 min after round2)
   };
@@ -1368,34 +1418,44 @@ function App() {
               {/* Blur Overlay with Pre-Round Countdown - Only when waiting for GTD to start */}
               {currentRound === 0 && (
                 <BlurOverlay>
-                  <PreRoundCountdown>
-                    <div className="countdown-label">GTD PHASE STARTS IN</div>
-                    <div className="countdown-timer">
-                      {roundCountdown.days > 0 && (
-                        <>
-                          <CountdownItem>
-                            <div className="number">{String(roundCountdown.days).padStart(2, '0')}</div>
-                            <div className="label">Days</div>
-                          </CountdownItem>
-                          <CountdownSeparator>:</CountdownSeparator>
-                        </>
-                      )}
-                      <CountdownItem>
-                        <div className="number">{String(roundCountdown.hours).padStart(2, '0')}</div>
-                        <div className="label">Hours</div>
-                      </CountdownItem>
-                      <CountdownSeparator>:</CountdownSeparator>
-                      <CountdownItem>
-                        <div className="number">{String(roundCountdown.minutes).padStart(2, '0')}</div>
-                        <div className="label">Minutes</div>
-                      </CountdownItem>
-                      <CountdownSeparator>:</CountdownSeparator>
-                      <CountdownItem>
-                        <div className="number">{String(roundCountdown.seconds).padStart(2, '0')}</div>
-                        <div className="label">Seconds</div>
-                      </CountdownItem>
-                    </div>
-                  </PreRoundCountdown>
+                  {!showWhitelistChecker ? (
+                    <PreRoundCountdown>
+                      <div className="countdown-label">GTD PHASE STARTS IN</div>
+                      <div className="countdown-timer">
+                        {roundCountdown.days > 0 && (
+                          <>
+                            <CountdownItem>
+                              <div className="number">{String(roundCountdown.days).padStart(2, '0')}</div>
+                              <div className="label">Days</div>
+                            </CountdownItem>
+                            <CountdownSeparator>:</CountdownSeparator>
+                          </>
+                        )}
+                        <CountdownItem>
+                          <div className="number">{String(roundCountdown.hours).padStart(2, '0')}</div>
+                          <div className="label">Hours</div>
+                        </CountdownItem>
+                        <CountdownSeparator>:</CountdownSeparator>
+                        <CountdownItem>
+                          <div className="number">{String(roundCountdown.minutes).padStart(2, '0')}</div>
+                          <div className="label">Minutes</div>
+                        </CountdownItem>
+                        <CountdownSeparator>:</CountdownSeparator>
+                        <CountdownItem>
+                          <div className="number">{String(roundCountdown.seconds).padStart(2, '0')}</div>
+                          <div className="label">Seconds</div>
+                        </CountdownItem>
+                      </div>
+                      <WhitelistCheckButton onClick={() => setShowWhitelistChecker(true)}>
+                        Check Whitelist Status
+                      </WhitelistCheckButton>
+                    </PreRoundCountdown>
+                  ) : (
+                    <WhitelistChecker 
+                      show={showWhitelistChecker} 
+                      onClose={() => setShowWhitelistChecker(false)}
+                    />
+                  )}
                 </BlurOverlay>
               )}
 
@@ -1658,10 +1718,10 @@ function App() {
               <InfoList>
                 <li><strong>Model:</strong> Decentralized Infrastructure Provisioning (DIP)</li>
                 <li><strong>Settlement Asset:</strong> Iridium Data (1 IRIDIUM = 1 USDC)</li>
-                <li><strong>Monthly Output:</strong> 6–24 Iridium (Scalable up to 48 IRIDIUM)</li>
-                <li><strong>Operation:</strong> Autonomous. Active data uplink maintained via on-chain validation</li>
-                <li><strong>Settlement:</strong> Automated Weekly (Wednesdays). Balances &gt;$3 settled to wallet</li>
-                <li><strong>Funding:</strong> MindForge Treasury Budget</li>
+                <li><strong>Standard Monthly Node Output:</strong> 6–24 Iridium (6–24 USDC) Per Node NFT (Scalable up to 48 Iridium (48 USDC) via Efficiency Protocols)</li>
+                <li><strong>Operation:</strong> Autonomous. Active data uplink is maintained via on-chain asset validation; no manual operation required.</li>
+                <li><strong>Settlement Cycle:</strong> Automated Weekly (Wednesdays). Balances &gt;$3 are strictly settled to the Node-holding wallet.</li>
+                <li><strong>Funding Source:</strong> MindForge Treasury Budget</li>
               </InfoList>
 
               <Divider />
@@ -1672,87 +1732,80 @@ function App() {
                 </IconSVG>
                 HARDWARE CAPACITY
               </InfoSubtitle>
+              <InfoText style={{ fontSize: '12px', marginBottom: '8px' }}>
+                (Monthly Operational Throughput)
+              </InfoText>
               <InfoText style={{ fontSize: '12px', marginBottom: '15px' }}>
-                Monthly Operational Throughput: [Standard] ➔ [Maximum Optimized]
+                Upon Mint, the protocol assigns a specific Node Class via cryptographic distribution. Values below indicate: [Standard Output] ➔ [Maximum Optimized Output]
               </InfoText>
 
-              <NodeBadge bg="rgba(200, 150, 255, 0.2)" border="rgba(200, 150, 255, 0.6)" glow="rgba(200, 150, 255, 0.4)">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#c8a6ff' }}>
-                    <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
-                  </IconSVG>
-                  <span>SINGULARITY (Mythic)</span>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#c8a6ff' }}>
-                    <path d="M9.19 6.35c-2.04 2.29-3.44 5.58-3.57 5.89L2 10.69l4.05-4.05c.47-.47 1.15-.68 1.81-.55l1.33 1.33zM11.17 17s3.74-1.32 5.51-3.09c.86-.86 1.32-2.02 1.32-3.24 0-1.22-.46-2.38-1.32-3.24-.86-.86-2.02-1.32-3.24-1.32-1.22 0-2.38.46-3.24 1.32-1.77 1.77-3.09 5.51-3.09 5.51l4.06 4.06zm6.24-12.24L14 8.17l3.89 3.89 3.41-3.41c.39-.39.39-1.02 0-1.41l-2.48-2.48c-.39-.39-1.02-.39-1.41 0zM21.19 21.19l-1.41-1.41L4.22 4.22 2.81 5.63 8.38 11.2l-5.52 5.52c-.98.98-.98 2.56 0 3.54l1.41 1.41c.98.98 2.56.98 3.54 0l5.52-5.52 5.57 5.57 1.41-1.41-.02-.02z"/>
-                  </IconSVG>
-                </div>
-                24 ➔ 48 Iridium ($24—$48 monthly)
-              </NodeBadge>
-
-              <NodeBadge bg="rgba(255, 50, 50, 0.2)" border="rgba(255, 100, 100, 0.6)" glow="rgba(255, 50, 50, 0.4)">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#ff6464' }}>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                  </IconSVG>
-                  <span>PLASMA RELAY (Legendary)</span>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#ff6464' }}>
-                    <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
-                  </IconSVG>
-                </div>
-                20 ➔ 40 Iridium ($20—$40 monthly)
-              </NodeBadge>
-
-              <NodeBadge bg="rgba(150, 50, 255, 0.2)" border="rgba(150, 100, 255, 0.6)" glow="rgba(150, 50, 255, 0.4)">
+              <NodeBadge bg="rgba(150, 50, 255, 0.2)" border="rgba(180, 100, 255, 0.6)" glow="rgba(150, 50, 255, 0.4)">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
                   <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#9664ff' }}>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </IconSVG>
-                  <span>VOID RELAY (Epic)</span>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#9664ff' }}>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-5.5-9c.83 0 1.5-.67 1.5-1.5S7.33 8 6.5 8 5 8.67 5 9.5 5.67 11 6.5 11zm11 0c.83 0 1.5-.67 1.5-1.5S18.33 8 17.5 8 16 8.67 16 9.5s.67 1.5 1.5 1.5zm-5.5 6c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
-                  </IconSVG>
+                  <span>SINGULARITY (Mythic) 🚀</span>
                 </div>
-                16 ➔ 32 Iridium ($16—$32 monthly)
+                <strong>Throughput:</strong> 24 ➔ 48 Iridium ($24 — $48 USDC monthly)
               </NodeBadge>
 
-              <NodeBadge bg="rgba(255, 200, 0, 0.2)" border="rgba(255, 200, 0, 0.6)" glow="rgba(255, 200, 0, 0.4)">
+              <NodeBadge bg="rgba(0, 255, 100, 0.2)" border="rgba(0, 255, 120, 0.6)" glow="rgba(0, 255, 100, 0.4)">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#ffc800' }}>
+                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#00ff88' }}>
+                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                  </IconSVG>
+                  <span>PLASMA RELAY (Legendary) 🔥</span>
+                </div>
+                <strong>Throughput:</strong> 20 ➔ 40 Iridium ($20 — $40 USDC monthly)
+              </NodeBadge>
+
+              <NodeBadge bg="rgba(0, 220, 220, 0.2)" border="rgba(0, 240, 240, 0.6)" glow="rgba(0, 220, 220, 0.4)">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#00e0e0' }}>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                  </IconSVG>
+                  <span>VOID RELAY (Epic) 🔮</span>
+                </div>
+                <strong>Throughput:</strong> 16 ➔ 32 Iridium ($16 — $32 USDC monthly)
+              </NodeBadge>
+
+              <NodeBadge bg="rgba(255, 100, 200, 0.2)" border="rgba(255, 120, 220, 0.6)" glow="rgba(255, 100, 200, 0.4)">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#ff80d0' }}>
                     <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
                   </IconSVG>
-                  <span>SOLAR (Rare)</span>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#ffc800' }}>
-                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-                  </IconSVG>
+                  <span>SOLAR (Rare) ⚡</span>
                 </div>
-                12 ➔ 24 Iridium ($12—$24 monthly)
+                <strong>Throughput:</strong> 12 ➔ 24 Iridium ($12 — $24 USDC monthly)
               </NodeBadge>
 
-              <NodeBadge bg="rgba(0, 255, 100, 0.2)" border="rgba(0, 255, 100, 0.6)" glow="rgba(0, 255, 100, 0.4)">
+              <NodeBadge bg="rgba(50, 150, 255, 0.2)" border="rgba(80, 180, 255, 0.6)" glow="rgba(50, 150, 255, 0.4)">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#00ff64' }}>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#5096ff' }}>
+                    <path d="M17.5 4.5c-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-1.45-1.1-3.55-1.5-5.5-1.5zM21 18.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>
                   </IconSVG>
-                  <span>ISOTOPE (Uncommon)</span>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#00ff64' }}>
-                    <path d="M7.88 3.39L6.6 1.86 2 5.71l1.29 1.53 4.59-3.85zM22 5.72l-4.6-3.86-1.29 1.53 4.6 3.86L22 5.72zM12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V9z"/>
-                  </IconSVG>
+                  <span>ISOTOPE (Uncommon) ☢️</span>
                 </div>
-                9 ➔ 18 Iridium ($9—$18 monthly)
+                <strong>Throughput:</strong> 9 ➔ 18 Iridium ($9 — $18 USDC monthly)
               </NodeBadge>
 
-              <NodeBadge bg="rgba(0, 150, 255, 0.2)" border="rgba(0, 200, 255, 0.6)" glow="rgba(0, 150, 255, 0.4)">
+              <NodeBadge bg="rgba(255, 220, 0, 0.2)" border="rgba(255, 230, 50, 0.6)" glow="rgba(255, 220, 0, 0.4)">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#00c8ff' }}>
-                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6v2c-1.82 0-3.41.88-4.41 2.23L6.09 11.5H6c-1.1 0-2 .9-2 2s.9 2 2 2h13c.55 0 1-.45 1-1s-.45-1-1-1h-1.5v-.5c0-2.21-1.79-4-4-4-.51 0-1 .1-1.45.27l-.69-.69C10.82 8.23 11.39 8 12 8c2.21 0 4 1.79 4 4v.5h1.35z"/>
+                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#ffe632' }}>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                   </IconSVG>
-                  <span>NANO (Common)</span>
-                  <IconSVG viewBox="0 0 24 24" style={{ width: '18px', height: '18px', fill: '#00c8ff' }}>
-                    <path d="M15 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7l-5-5zM6 20V4h8v4h4v12H6zm10-10v5c0 2.21-1.79 4-4 4s-4-1.79-4-4V8.5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5V15h-2V8.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5V15c0 1.1.9 2 2 2s2-.9 2-2v-5h2z"/>
-                  </IconSVG>
+                  <span>NANO (Common) 💾</span>
                 </div>
-                6 ➔ 12 Iridium ($6—$12 monthly)
+                <strong>Throughput:</strong> 6 ➔ 12 Iridium ($6 — $12 USDC monthly)
               </NodeBadge>
+
+              <InfoText style={{ fontSize: '12px', marginTop: '15px', color: '#ffc800', fontWeight: '600' }}>
+                ⚠️ PERFORMANCE NOTE: Operators can amplify their Standard Output up to 2x by activating the protocols listed in the 'LOYALTY & EFFICIENCY' section.
+              </InfoText>
+
+              <InfoText style={{ fontSize: '11px', marginTop: '10px', fontStyle: 'italic', opacity: '0.85' }}>
+                ✏️ Note: Iridium Data represents a validated service receipt, settled by the Treasury at a fixed contract rate of 1 USDC.
+              </InfoText>
 
               <Divider />
 
@@ -1762,11 +1815,22 @@ function App() {
                 </IconSVG>
                 SYSTEM LOGIC
               </InfoSubtitle>
+              <InfoText style={{ marginBottom: '12px' }}>
+                (Operational Framework)
+              </InfoText>
+              <InfoText style={{ marginBottom: '15px' }}>
+                This system is a B2B Service Agreement in exchange for the technical support you provide to the Dominion infrastructure.
+              </InfoText>
               <InfoList>
-                <li><strong>COMPUTATION:</strong> Node processes data autonomously. Wallet custody validates connection</li>
-                <li><strong>PROCUREMENT:</strong> Treasury issues Service Receipt (Iridium) for validated processing</li>
-                <li><strong>STABILITY:</strong> Fixed rate: 1 Iridium = 1 USDC (no market volatility)</li>
-                <li><strong>SETTLEMENT:</strong> Weekly (Wednesdays). Balances &gt;$3 auto-converted to wallet</li>
+                <li><strong>1. COMPUTATION (Autonomous Uplink)</strong> The Node processes mathematical universe data in the background. Your wallet custody serves as the "Active License," validating the connection without requiring manual intervention.</li>
+                <li><strong>2. PROCUREMENT</strong> The MindForge Treasury issues a Service Receipt (Iridium) in exchange for the validated processing power provided by your Node.</li>
+                <li><strong>3. REWARD STABILITY</strong> Revenue is decoupled from market volatility. Compensation is governed by the Fixed Contract Rate: 1 Iridium is universally settled as 1 USDC.</li>
+                <li><strong>4. SETTLEMENT PROTOCOL (Automated)</strong>
+                  <ul style={{ marginTop: '8px', paddingLeft: '20px' }}>
+                    <li>Cycle: Weekly (Every Wednesday).</li>
+                    <li>Trigger: Accumulated balances exceeding 3 Iridium ($3) are automatically converted and remitted to the Operator's wallet.</li>
+                  </ul>
+                </li>
               </InfoList>
 
               <Divider />
@@ -1775,34 +1839,41 @@ function App() {
                 <IconSVG viewBox="0 0 24 24" style={{ width: '20px', height: '20px' }}>
                   <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                 </IconSVG>
-                LOYALTY & EFFICIENCY
+                LOYALTY & EFFICIENCY PROTOCOLS
               </InfoSubtitle>
+              <InfoText style={{ marginBottom: '15px' }}>
+                Maximize operational throughput by maintaining network stability and optimizing hardware clusters. Bonuses are simultaneous.
+              </InfoText>
               <InfoText>
                 <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   <IconSVG viewBox="0 0 24 24" style={{ width: '16px', height: '16px' }}>
                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                   </IconSVG>
-                  Signal Stability (Uptime Bonus):
+                  Signal Stability (Uptime Bonus)
                 </strong>
+              </InfoText>
+              <InfoText style={{ marginBottom: '10px', fontSize: '13px' }}>
+                Efficiency increases based on continuous custody duration in the same wallet:
               </InfoText>
               <InfoList>
                 <li>7 Days: +5% Efficiency</li>
                 <li>15 Days: +10% Efficiency</li>
                 <li>20 Days: +15% Efficiency</li>
-                <li>30+ Days: +20% Max Efficiency</li>
+                <li>30+ Days: +20% Efficiency (Max)</li>
               </InfoList>
 
-              <InfoText>
+              <InfoText style={{ marginTop: '20px' }}>
                 <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   <IconSVG viewBox="0 0 24 24" style={{ width: '16px', height: '16px' }}>
                     <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
                   </IconSVG>
-                  Hexa-Link (Cluster Bonus):
+                  Hexa-Link (Cluster Bonus)
                 </strong>
               </InfoText>
-              <InfoList>
-                <li>Complete set of 6 classes: +10% Output per set</li>
-                <li>Stackable (5 sets = +50% Boost)</li>
+              <InfoList style={{ marginTop: '10px' }}>
+                <li><strong>Requirement:</strong> Every complete set of 6 distinct hardware classes (Common to Mythic).</li>
+                <li><strong>Reward:</strong> +10% Output Boost per completed set.</li>
+                <li><strong>Scalability:</strong> Stackable Module. (e.g., 5 Complete Sets = +50% Boost).</li>
               </InfoList>
             </InfoBox>
           </MintBoxWrapper>
