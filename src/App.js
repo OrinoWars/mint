@@ -8,7 +8,7 @@ import ReactDOM from "react-dom";
 import Countdown from "react-countdown";
 import ReactGA from "react-ga4";
 
-ReactGA.initialize("G-0HS7GKYZHX");
+ReactGA.initialize("G-CLEY5YQ96C");
 
 const truncate = (input, len) =>
   input.length > len ? `${input.substring(0, len)}...` : input;
@@ -753,7 +753,7 @@ const InfoBadge = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 8px;
   font-family: "Exo 2", "Font2", sans-serif;
   color: #00d4ff;
   text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
@@ -767,8 +767,15 @@ const InfoBadge = styled.div`
     border-color: rgba(0, 212, 255, 0.8);
   }
 
+  .badge-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
   span.label {
-    font-size: 11px;
+    font-size: 13px;
     opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -778,7 +785,7 @@ const InfoBadge = styled.div`
 
   span.value {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 20px;
     color: #00ffff;
     text-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
     font-family: "Rajdhani", "Font2", sans-serif;
@@ -787,15 +794,15 @@ const InfoBadge = styled.div`
 
   @media (max-width: 768px) {
     padding: 8px 10px;
-    gap: 4px;
+    gap: 6px;
     flex: 1 1 auto;
 
     span.label {
-      font-size: 10px;
+      font-size: 11px;
     }
 
     span.value {
-      font-size: 14px;
+      font-size: 16px;
     }
   }
 `;
@@ -1111,9 +1118,9 @@ function App() {
   
   // TEST VALUES (remove after testing):
   const ROUND_TIMES = {
-    round1: new Date('2026-02-06T19:59:00Z'), // TEST: 6 Feb 2026 18:05 UTC
-    round2: new Date('2026-02-06T21:51:00Z'), // TEST: 6 Feb 2026 18:10 UTC (5 min after round1)
-    round3: new Date('2026-02-06T22:35:00Z'), // TEST: 6 Feb 2026 18:15 UTC (5 min after round2)
+    round1: new Date('2026-02-07T20:38:00Z'), // TEST: 6 Feb 2026 18:05 UTC
+    round2: new Date('2026-02-07T20:39:00Z'), // TEST: 6 Feb 2026 18:10 UTC (5 min after round1)
+    round3: new Date('2026-02-07T20:40:00Z'), // TEST: 6 Feb 2026 18:15 UTC (5 min after round2)
   };
 
   // Determine current round and update countdown
@@ -1359,7 +1366,7 @@ function App() {
           <MintBoxWrapper>
             <TiltedBox flex="1" bg="linear-gradient(135deg, rgba(8, 14, 30, 0.98) 0%, rgba(15, 23, 45, 0.98) 100%)">
               {/* Blur Overlay with Pre-Round Countdown - Only when waiting for GTD to start */}
-              {currentRound === 0 && blockchain.account !== "" && blockchain.smartContract !== null && (
+              {currentRound === 0 && (
                 <BlurOverlay>
                   <PreRoundCountdown>
                     <div className="countdown-label">GTD PHASE STARTS IN</div>
@@ -1399,8 +1406,8 @@ function App() {
               width: "100%",
             }}
           >
-            {/* Eligibility Badge - Show when wallet connected and round is active */}
-            {blockchain.account !== "" && blockchain.smartContract !== null && currentRound > 0 && !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
+            {/* Eligibility Badge - Show when wallet connected and round is active (but not in PUBLIC round) */}
+            {blockchain.account !== "" && blockchain.smartContract !== null && currentRound > 0 && currentRound !== 3 && !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
               <EligibilityBadge>
                 <div className="checkmark"></div>
                 <div className="message">
@@ -1413,11 +1420,13 @@ function App() {
             <InfoBadgesContainer>
               {!(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
                 <InfoBadge>
-                  <IconSVG viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
-                  </IconSVG>
-                  <span className="label">PRICE</span>
-                  <span className="value">{CONFIG.DISPLAY_COST} ETH</span>
+                  <div className="badge-header">
+                    <IconSVG viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                    </IconSVG>
+                    <span className="label">PRICE</span>
+                  </div>
+                  <span className="value">{currentRound === 3 ? '0.012' : CONFIG.DISPLAY_COST} ETH</span>
                 </InfoBadge>
               )}
               
@@ -1425,10 +1434,12 @@ function App() {
                 !(blockchain.account === "" || blockchain.smartContract === null) &&
                 !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
                   <InfoBadge>
-                    <IconSVG viewBox="0 0 24 24">
-                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                    </IconSVG>
-                    <span className="label">MINTED</span>
+                    <div className="badge-header">
+                      <IconSVG viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                      </IconSVG>
+                      <span className="label">MINTED</span>
+                    </div>
                     <span className="value">
                       {data.totalSupply > 0
                         ? `${data.totalSupply} / ${CONFIG.MAX_SUPPLY}`
@@ -1441,10 +1452,12 @@ function App() {
                 blockchain.account === "" ||
                 blockchain.smartContract === null) && (
                   <InfoBadge>
-                    <IconSVG viewBox="0 0 24 24">
-                      <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
-                    </IconSVG>
-                    <span className="label">SUPPLY</span>
+                    <div className="badge-header">
+                      <IconSVG viewBox="0 0 24 24">
+                        <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                      </IconSVG>
+                      <span className="label">SUPPLY</span>
+                    </div>
                     <span className="value">1111</span>
                   </InfoBadge>
                 )}
@@ -1452,10 +1465,12 @@ function App() {
               {/* Max Mint Badge */}
               {(blockchain.account !== "" && blockchain.smartContract !== null) && !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
                 <InfoBadge>
-                  <IconSVG viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                  </IconSVG>
-                  <span className="label">MAX MINT</span>
+                  <div className="badge-header">
+                    <IconSVG viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                    </IconSVG>
+                    <span className="label">MAX MINT</span>
+                  </div>
                   <span className="value">
                     {currentRound === 0 ? '3' : currentRound === 1 ? '3' : currentRound === 2 ? '5' : '10'}
                   </span>
