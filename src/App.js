@@ -1168,9 +1168,9 @@ function App() {
   
   // TEST VALUES (remove after testing):
   const ROUND_TIMES = {
-    round1: new Date('2026-02-07T20:17:00Z'), // TEST: 6 Feb 2026 18:05 UTC
-    round2: new Date('2026-02-07T20:39:00Z'), // TEST: 6 Feb 2026 18:10 UTC (5 min after round1)
-    round3: new Date('2026-02-07T20:40:00Z'), // TEST: 6 Feb 2026 18:15 UTC (5 min after round2)
+    round1: new Date('2026-02-10T15:00:00Z'), // TEST: 6 Feb 2026 18:05 UTC
+    round2: new Date('2026-02-10T17:00:00Z'), // TEST: 6 Feb 2026 18:10 UTC (5 min after round1)
+    round3: new Date('2026-02-10T19:00:00Z'), // TEST: 6 Feb 2026 18:15 UTC (5 min after round2)
   };
 
   // Determine current round and update countdown
