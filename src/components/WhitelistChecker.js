@@ -262,26 +262,39 @@ function WhitelistChecker({ show, onClose }) {
   const [isCheckingWhitelist, setIsCheckingWhitelist] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isWhitelisted, setIsWhitelisted] = useState(false);
+  const [whitelistPhase, setWhitelistPhase] = useState(''); // 'GTD' or 'FCFS'
   const [whitelistAddresses, setWhitelistAddresses] = useState([]);
+  const [fcfsWhitelistAddresses, setFcfsWhitelistAddresses] = useState([]);
 
-  // Load whitelist addresses from txt file
+  // Load whitelist addresses from txt files
   useEffect(() => {
-    const loadWhitelist = async () => {
+    const loadWhitelists = async () => {
       try {
-        const response = await fetch('/config/whitelist.txt');
-        const text = await response.text();
-        const addresses = text
+        // Load GTD whitelist
+        const gtdResponse = await fetch('/config/whitelist.txt');
+        const gtdText = await gtdResponse.text();
+        const gtdAddresses = gtdText
           .split('\n')
           .map(addr => addr.trim().toLowerCase())
           .filter(addr => addr.length > 0);
-        setWhitelistAddresses(addresses);
+        setWhitelistAddresses(gtdAddresses);
+
+        // Load FCFS whitelist
+        const fcfsResponse = await fetch('/config/fcfswhitelist.txt');
+        const fcfsText = await fcfsResponse.text();
+        const fcfsAddresses = fcfsText
+          .split('\n')
+          .map(addr => addr.trim().toLowerCase())
+          .filter(addr => addr.length > 0);
+        setFcfsWhitelistAddresses(fcfsAddresses);
       } catch (error) {
-        console.error('Error loading whitelist:', error);
+        console.error('Error loading whitelists:', error);
         setWhitelistAddresses([]);
+        setFcfsWhitelistAddresses([]);
       }
     };
     
-    loadWhitelist();
+    loadWhitelists();
   }, []);
 
   // When wallet connects, show loading for 4 seconds and check whitelist
@@ -292,8 +305,18 @@ function WhitelistChecker({ show, onClose }) {
       const timer = setTimeout(() => {
         // Check if wallet address is in whitelist
         const walletLower = blockchain.account.toLowerCase();
-        const isInWhitelist = whitelistAddresses.includes(walletLower);
-        setIsWhitelisted(isInWhitelist);
+        
+        // FCFS has priority over GTD
+        if (fcfsWhitelistAddresses.includes(walletLower)) {
+          setIsWhitelisted(true);
+          setWhitelistPhase('FCFS');
+        } else if (whitelistAddresses.includes(walletLower)) {
+          setIsWhitelisted(true);
+          setWhitelistPhase('GTD');
+        } else {
+          setIsWhitelisted(false);
+          setWhitelistPhase('');
+        }
         
         setIsCheckingWhitelist(false);
         setShowResults(true);
@@ -301,7 +324,7 @@ function WhitelistChecker({ show, onClose }) {
 
       return () => clearTimeout(timer);
     }
-  }, [blockchain.account, blockchain.smartContract, showResults, whitelistAddresses]);
+  }, [blockchain.account, blockchain.smartContract, showResults, whitelistAddresses, fcfsWhitelistAddresses]);
 
   const handleConnectForWhitelist = (e) => {
     e.preventDefault();
@@ -313,6 +336,7 @@ function WhitelistChecker({ show, onClose }) {
     setIsCheckingWhitelist(false);
     setShowResults(false);
     setIsWhitelisted(false);
+    setWhitelistPhase('');
     if (onClose) {
       onClose();
     }
@@ -360,11 +384,13 @@ function WhitelistChecker({ show, onClose }) {
           <InfoLabel>Wallet Connected</InfoLabel>
           <AddressDisplay>{blockchain.account}</AddressDisplay>
           
-          {/* Whitelist Status - Now dynamically checked */}
+          {/* Whitelist Status - Dynamically checked with phase */}
           <StatusBadge whitelisted={isWhitelisted}>
             <div className="icon"></div>
             <div className="text">
-              {isWhitelisted ? 'Whitelisted for GTD Phase' : 'Wallet Not Whitelisted'}
+              {isWhitelisted 
+                ? `Whitelisted for ${whitelistPhase} Phase` 
+                : 'Wallet Not Whitelisted'}
             </div>
           </StatusBadge>
           
