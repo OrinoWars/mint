@@ -85,7 +85,18 @@ export const connect = () => {
           });
           // Add listeners end
         } else {
-          dispatch(connectFailed(`Change network to ${CONFIG.NETWORK.NAME}.`));
+          // Try to switch network automatically
+          try {
+            const chainIdHex = '0x' + CONFIG.NETWORK.ID.toString(16);
+            await ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: chainIdHex }],
+            });
+            // Switch successful - chainChanged listener will reload page
+          } catch (switchError) {
+            // User rejected or error - show message
+            dispatch(connectFailed(`Change network to ${CONFIG.NETWORK.NAME}.`));
+          }
         }
       } catch (err) {
         dispatch(connectFailed("Something went wrong."));
