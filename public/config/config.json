@@ -1,6 +1,6 @@
 {
-  "CONTRACT_ADDRESS": "0x90CDbAF9b366f837C250E7dfa13b85E8494d5479",
-  "SCAN_LINK": "https://etherscan.io/address/0x90CDbAF9b366f837C250E7dfa13b85E8494d5479",
+  "CONTRACT_ADDRESS": "0x95e6F7289244370937f0B16Adc285e9d34e1FF9c",
+  "SCAN_LINK": "https://etherscan.io/address/0x95e6F7289244370937f0B16Adc285e9d34e1FF9c",
   "NETWORK": {
     "NAME": "Ethereum",
     "SYMBOL": "ETH",
@@ -13,6 +13,6 @@
   "DISPLAY_COST": 0.009,
   "GAS_LIMIT": 285000,
   "MARKETPLACE": "Opensea",
-  "MARKETPLACE_LINK": "https://opensea.io/collection/orionwars",
+  "MARKETPLACE_LINK": "https://opensea.io/collection/orionwarsdominion",
   "SHOW_BACKGROUND": true
 }
