@@ -225,6 +225,7 @@ function App() {
       })
       .then((receipt) => {
         console.log(receipt);
+        document.getElementById("feedback").style.background = "#248307";
         setFeedback(
           `Mint successful! Verify your wallet on Discord to start Hold Earn!`
         );
@@ -305,7 +306,7 @@ function App() {
             </div>
 
             <Countdown
-              date={new Date(Date.UTC(2026, 3, 9, 14, 0, 0))}
+              date={new Date(Date.UTC(2025, 3, 9, 14, 0, 0))}
               onComplete={() => setIsLive(true)}
               renderer={({ days, hours, minutes, seconds, completed }) => {
                 if (completed) {
@@ -548,7 +549,7 @@ function App() {
                           textAlign: "center",
                           color: "var(--ink)",
                           border: "3px solid var(--ink)",
-                          background: claimingNft ? "var(--navy)" : "#137e25",
+                          background: claimingNft ? "var(--navy)" : "#ac0d0d",
                           boxShadow: "4px 4px 0 var(--ink)",
                           borderRadius: "8px",
                           padding: "16px 20px",
