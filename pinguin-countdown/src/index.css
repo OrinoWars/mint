@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Itim&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+html {
+  background-color: #f5e6c8;
+}
+
+body {
+  background-color: #f5e6c8;
+  font-family: 'Itim', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  cursor: default;
+}
+
+/* Keep arrow over text (no I-beam); links stay pointer via .social-link */
+.page,
+.page * {
+  cursor: inherit;
+}
+
+.page .social-link {
+  cursor: pointer;
+}

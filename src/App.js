@@ -13,149 +13,139 @@ ReactGA.initialize("G-0HS7GKYZHX");
 const StyledTextDescription = styled(s.TextDescription)`
   text-align: center;
   width: 20px;
-  font-size: 25px;
-  color: var(--accent-text);
-  padding-top: 2px;
-
-  @media (max-width: 768px) {
-    font-size: 15px;
-  }
+  font-size: 1.05rem;
+  color: var(--ink);
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  letter-spacing: 2px;
 `;
 
 const MintPhaseTitle = styled(s.TextTitle)`
   text-align: center;
-  color: white;
-  font-size: 20px;
-  letter-spacing: 10px;
-  text-shadow: rgb(69 255 5) 0px 0px 30px;
+  color: var(--teal);
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  letter-spacing: 6px;
   text-transform: uppercase;
-  font-family: "Font1";
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
   line-height: 1;
-  margin: 0 0 20px 0;
+  margin: 4px 0 16px 0;
   padding: 0;
-
-  @media (max-width: 768px) {
-    font-size: 17px;
-  }
 `;
 
 const StyledTextTitle = styled(s.TextTitle)`
   text-align: center;
-  color: white;
-  font-size: 60px;
-  letter-spacing: 10px;
-  text-shadow: rgb(255 0 0) 0px 0px 30px;
+  color: var(--yellow);
+  font-size: clamp(3.2rem, 12vw, 7rem);
+  letter-spacing: 5px;
+  -webkit-text-stroke: 3px var(--ink);
+  text-shadow: 6px 8px 0 var(--red), 8px 10px 0 var(--ink);
   text-transform: uppercase;
-  font-family: "Font1";
-  line-height: 1.2;
-  margin: 0 0 10px 0;
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  line-height: 0.9;
+  margin: 0 0 12px 0;
   padding: 0;
 
   @media (max-width: 768px) {
-    font-size: 36px;
-    margin-top: 20px;
+    text-shadow: 3px 4px 0 var(--red), 4px 5px 0 var(--ink);
   }
 `;
 
 const StyledDiv = styled.div`
   display: flex;
   justify-content: space-between;
-  max-width: 350px;
+  max-width: 384px;
   width: 100%;
-  padding: 10px 5px;
+  padding: 12px 16px;
   align-items: center;
-  font-size: 30px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  font-family: "Font2";
+  font-size: 1.05rem;
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  letter-spacing: 3px;
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 var(--ink);
+  margin-top: 8px;
+
+  & > span:last-child:not([style]) {
+    color: var(--teal);
+    font-size: 1.15rem;
+  }
 
   @media (max-width: 768px) {
-    font-size: 20px;
-    padding: 8px 4px;
+    font-size: 0.92rem;
+    padding: 10px 12px;
   }
 `;
 
 export const StyledButton = styled.button`
-  padding: 20px;
-  padding-right:10px;
-  border-radius: 16px;
-  border: 2px solid #c0c0c0;
-  background-color: rgb(15 105 23 / 95%);
-  font-weight: bold;
-  font-size: 1.5rem;
-  font-family: Font2;
-  letter-spacing: 12px;
-  color: white;
-  text-shadow: 0 0 20px rgba(192, 192, 192, 1);
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 4px;
   text-transform: uppercase;
+  padding: 18px 56px;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  background: var(--red);
+  color: var(--cream);
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(192, 192, 192, 1);
-  transition: all 0.3s ease-in-out;
+  box-shadow: 4px 4px 0 var(--ink);
+  text-shadow: 1px 1px 0 var(--ink);
+  transition: transform 0.12s, box-shadow 0.12s;
 
-  &:hover {
-    background: rgb(3 46 7 / 95%);
-    border: 2px solid #e0e0e0
-    color: white;
-    box-shadow: 0 0 40px rgba(192, 192, 192, 1);
-    transform: scale(1.1);
+  &:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
   }
 
-  &:active {
-    background: rgba(80, 20, 20, 1);
-    box-shadow: 0 0 25px rgba(192, 192, 192, 0.8);
-    border: 2px solid #a9a9a9;
-    transform: scale(0.95);
+  &:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--ink);
   }
 
   &:disabled {
-    background: rgba(128, 128, 128, 0.5);
-    border: 2px solid #a9a9a9;
-    color: #d3d3d3;
-    text-shadow: none;
-    box-shadow: none;
+    opacity: 0.55;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 4px 4px 0 var(--ink);
   }
 
-    @media (max-width: 768px) {
-    font-size: 15px;
-      padding: 15px;
-  padding-right:10px;
+  @media (max-width: 768px) {
+    font-size: 1.15rem;
+    padding: 14px 24px;
   }
 `;
 
 export const StyledRoundButton = styled.button`
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-size: 1rem;
   font-weight: bold;
-  font-size: 18px;
-  color: var(--primary-text);
-  width: 40px;
-  height: 40px;
+  color: var(--ink);
+  background: var(--cream);
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.7);
-  transition: all 0.2s ease-in-out;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.12s, box-shadow 0.12s;
+  line-height: 1;
 
-  &:hover {
-    background: linear-gradient(145deg, #ffffff, #e6e6e6);
-    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+  &:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--ink);
   }
 
-  &:active {
-    transform: scale(0.95);
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+  &:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--ink);
   }
 
-  @media (max-width: 768px) {
-    width: 25px;
-    height: 25px;
-    border-radius: 5px;
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 `;
 
@@ -166,63 +156,6 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const CountdownTimer = styled.div`
-  font-weight: bold;
-  color: #ff0077;
-  text-align: center;
-  font-size: 3rem;
-  padding: 20px;
-  padding-top: 5px;
-  border: 3px solid #ffd700;
-  border-radius: 20px;
-  background: rgba(28, 28, 36, 0.95);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
-  width: auto;
-  margin: 20px auto;
-  letter-spacing: 1px;
-
-  @media (max-width: 768px) {
-    font-size: 35px;
-    padding: 15px;
-    margin-right: 0px;
-    margin-left: 0px;
-    padding-top: 5px;
-  }
-`;
-
-const TimerText = styled.span`
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
-  font-size: 30px;
-
-  @media (max-width: 768px) {
-    font-size: 18px;
-  }
-`;
-
-const TimerUnit = styled.span`
-  font-size: 1.2rem;
-  font-weight: normal;
-  margin-left: 0px;
-  color: #ffd700;
-
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-`;
-
-const Divider = styled.span`
-  font-size: 30px;
-  color: #ffd700;
-  margin: 0 5px;
-`;
-
-const MintStartedText = styled.span`
-  color: #00ffcc;
-  font-size: 3rem;
-  font-weight: bold;
-  text-shadow: 0 0 20px rgba(0, 255, 204, 0.9);
-`;
 
 
 
@@ -343,83 +276,81 @@ function App() {
       <div className="mint-wrapper">
         <div className="mint-ticket">
           <div className="mint-ticket-header">
-            <span className="mint-ticket-header-title">PINGUIN — 1ST DROP</span>
+            <a
+              className="mint-header-trailer"
+              href="https://www.youtube.com/watch?v=HTIZYjeU9lE"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>
+              Watch Trailer
+            </a>
           </div>
           <div className="mint-ticket-body">
-            <StyledTextTitle>Pinguin</StyledTextTitle>
+            <div className="mint-hero-block">
+              <StyledTextTitle>Pinguin</StyledTextTitle>
+            </div>
 
-            <MintPhaseTitle>1st DROP</MintPhaseTitle>
+            <div className="mint-lights-row" aria-hidden="true">
+              {[0,1,2,3,4,5,6,7,8,9].map((i) => (
+                <div key={i} className="mint-light" />
+              ))}
+            </div>
 
-            {!isLive && (
-              <CountdownTimer
-                style={{
-                  fontFamily: "Font1",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                <Countdown
-                  date={new Date(Date.UTC(2025, 5, 26, 13, 0, 0))}
-                  onComplete={() => setIsLive(true)}
-                  renderer={({ days, hours, minutes, seconds, completed }) => {
-                    if (completed) {
-                      return (
-                        <MintStartedText style={{ fontFamily: "Font2" }}>
-                          🚀 Minting Started!
-                        </MintStartedText>
-                      );
-                    } else {
-                      return (
-                        <TimerText style={{ fontFamily: "Font2" }}>
-                          {days} <TimerUnit>days</TimerUnit>
-                          <Divider></Divider>
-                          {hours} <TimerUnit>hours</TimerUnit>
-                          <Divider></Divider>
-                          {minutes} <TimerUnit>minutes</TimerUnit>
-                          <Divider></Divider>
-                          {seconds} <TimerUnit>seconds</TimerUnit>
-                        </TimerText>
-                      );
-                    }
-                  }}
-                />
-              </CountdownTimer>
-            )}
-
-            <s.Container
-              style={{
-                padding: "0",
-                maxWidth: "350px",
-                width: "100%",
-                margin: "0px auto",
-                fontWeight: "bold",
-                color: "#C0C0C0",
-                textShadow: "0 0 15px rgba(192, 192, 192, 0.9)",
-                color: "var(--accent-text)",
+            <Countdown
+              date={new Date(Date.UTC(2026, 3, 9, 14, 0, 0))}
+              onComplete={() => setIsLive(true)}
+              renderer={({ days, hours, minutes, seconds, completed }) => {
+                if (completed) {
+                  return null;
+                }
+                return (
+                  <div className="countdown-wrap">
+                    <h2 className="countdown-title">Time Left Until Mint</h2>
+                    <div className="countdown-grid" role="timer" aria-live="polite">
+                      <div className="time-box">
+                        <strong>{String(days).padStart(2, '0')}</strong>
+                        <span>Days</span>
+                      </div>
+                      <div className="time-box">
+                        <strong>{String(hours).padStart(2, '0')}</strong>
+                        <span>Hours</span>
+                      </div>
+                      <div className="time-box">
+                        <strong>{String(minutes).padStart(2, '0')}</strong>
+                        <span>Minutes</span>
+                      </div>
+                      <div className="time-box">
+                        <strong>{String(seconds).padStart(2, '0')}</strong>
+                        <span>Seconds</span>
+                      </div>
+                    </div>
+                    <p className="launch-utc">
+                      Launch: <strong>9 April 2026, 14:00 UTC</strong>
+                    </p>
+                  </div>
+                );
               }}
-            >
+            />
+
+            <div className="mint-info-buttons">
+              <button className="mint-info-btn mint-info-btn--navy">Mint Info</button>
+              <button className="mint-info-btn mint-info-btn--orange">$2000 Mint Contest</button>
+              <button className="mint-info-btn mint-info-btn--teal">Hold &amp; Earn System</button>
+            </div>
+
+            <div className="mint-info-table">
               {!(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
-                <>
-                  <StyledDiv>
-                    <span>PRICE</span>
-                    <span>{CONFIG.DISPLAY_COST} ETH</span>
-                  </StyledDiv>
-                </>
+                <StyledDiv>
+                  <span>PRICE</span>
+                  <span>{CONFIG.DISPLAY_COST} ETH</span>
+                </StyledDiv>
               )}
               {isLive &&
-                !(
-                  blockchain.account === "" || blockchain.smartContract === null
-                ) &&
+                !(blockchain.account === "" || blockchain.smartContract === null) &&
                 !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
                   <>
-                    <div
-                      style={{
-                        borderTop: "2px solid #C0C0C0",
-                        boxShadow: "0 0 12px rgba(192, 192, 192, 0.9)",
-                        width: "100%",
-                      }}
-                    ></div>
-
+                    <hr className="mint-divider" />
                     <StyledDiv>
                       <span>MINTED</span>
                       <span>
@@ -434,64 +365,24 @@ function App() {
                 blockchain.account === "" ||
                 blockchain.smartContract === null) && (
                 <>
-                  <div
-                    style={{
-                      borderTop: "2px solid #C0C0C0",
-                      boxShadow: "0 0 12px rgba(192, 192, 192, 0.9)",
-                      width: "100%",
-                    }}
-                  ></div>
-
+                  <hr className="mint-divider" />
                   <StyledDiv>
                     <span>SUPPLY</span>
-                    <span>1500</span>
+                    <span>400</span>
                   </StyledDiv>
                 </>
               )}
-
-              <div
-                style={{
-                  borderTop: "2px solid #C0C0C0",
-                  boxShadow: "0 0 12px rgba(192, 192, 192, 0.9)",
-                  width: "100%",
-                }}
-              ></div>
-
-            </s.Container>
+              <hr className="mint-divider" />
+            </div>
 
             {Number(data.totalSupply) >= CONFIG.MAX_SUPPLY ? (
-              <>
-                <s.TextTitle
-                  style={{
-                    textAlign: "center",
-                    color: "white",
-                    fontSize: "60px",
-                    fontWeight: "900",
-                    letterSpacing: "10px",
-                    textShadow: "rgb(0 255 95) 0px 0px 30px",
-                    textTransform: "uppercase",
-                    fontFamily: "Font1",
-                    lineHeight: "85px",
-                    margin: "0",
-                    marginBottom: "10px",
-                    marginTop: "60px",
-                    padding: "0",
-                  }}
-                >
-                  SOLD OUT
-                </s.TextTitle>
-              </>
+              <div className="mint-sold-out">SOLD OUT</div>
             ) : (
               <>
                 {blockchain.account === "" ||
                 blockchain.smartContract === null ? (
-                  <s.Container ai={"center"} jc={"center"}>
-                    <s.SpacerSmall />
+                  <div className="mint-action-area">
                     <StyledButton
-                      style={{
-                        letterSpacing: "3.5px",
-                        paddingRight: "17px",
-                      }}
                       onClick={(e) => {
                         e.preventDefault();
                         dispatch(connect());
@@ -500,48 +391,17 @@ function App() {
                     >
                       Connect Wallet
                     </StyledButton>
-                    {blockchain.errorMsg !== "" ? (
-                      <>
-                        <s.SpacerSmall />
-                        <s.TextDescription
-                          style={{
-                            textAlign: "center",
-                            color: "var(--accent-text)",
-                          }}
-                        >
-                          {blockchain.errorMsg}
-                        </s.TextDescription>
-                      </>
-                    ) : null}
-                  </s.Container>
+                    {blockchain.errorMsg !== "" && (
+                      <p className="mint-error-msg">{blockchain.errorMsg}</p>
+                    )}
+                  </div>
                 ) : (
                   <>
-                    <s.Container
-                      style={{
-                        padding: "0",
-                        maxWidth: "350px",
-                        width: "100%",
-                        margin: "0px auto",
-                        fontWeight: "bold",
-                        color: "#C0C0C0",
-                        textShadow: "0 0 15px rgba(192, 192, 192, 0.9)",
-                        color: "var(--accent-text)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          borderTop: "2px solid #C0C0C0",
-                          boxShadow: "0 0 12px rgba(192, 192, 192, 0.9)",
-                          width: "100%",
-                        }}
-                      ></div>
-
+                    <div className="mint-amount-row">
                       <StyledDiv>
-                        <span style={{ marginTop: "7px" }}>AMOUNT</span>
-
-                        <span style={{ display: "flex", alignItems: "center" }}>
+                        <span>AMOUNT</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           <StyledRoundButton
-                            style={{ lineHeight: 0.4 }}
                             disabled={claimingNft ? 1 : 0}
                             onClick={(e) => {
                               e.preventDefault();
@@ -550,11 +410,9 @@ function App() {
                           >
                             -
                           </StyledRoundButton>
-                          <s.SpacerMedium />
                           <StyledTextDescription>
                             {mintAmount}
                           </StyledTextDescription>
-                          <s.SpacerMedium />
                           <StyledRoundButton
                             disabled={claimingNft ? 1 : 0}
                             onClick={(e) => {
@@ -566,29 +424,33 @@ function App() {
                           </StyledRoundButton>
                         </span>
                       </StyledDiv>
-                    </s.Container>
-                    <s.SpacerSmall />
+                    </div>
                     {feedback && (
                       <s.TextDescription
                         id="feedback"
                         style={{
                           textAlign: "center",
-                          color: "var(--accent-text)",
-                          border: "3px solid rgba(187, 12, 12, 0.9)",
-                          background: "rgba(28,28,36,0.95)",
-                          boxShadow: "0 0 20px rgba(187, 12, 12, 0.9)",
-                          borderRadius: "20px",
-                          padding: "20px",
-                          fontFamily: "Font3",
-                          fontWeight: "bold",
-                          fontSize: "17px",
-                          marginBottom: "25px",
+                          color: "var(--ink)",
+                          border: "3px solid var(--ink)",
+                          background: claimingNft ? "var(--navy)" : "var(--teal)",
+                          boxShadow: "4px 4px 0 var(--ink)",
+                          borderRadius: "8px",
+                          padding: "16px 20px",
+                          fontFamily: "'Bangers', Impact, 'Arial Black', sans-serif",
+                          fontSize: "1rem",
+                          letterSpacing: "2px",
+                          marginBottom: "16px",
+                          color: "var(--cream)",
+                          textShadow: "1px 1px 0 var(--ink)",
                         }}
                       >
                         {feedback}
                       </s.TextDescription>
                     )}
-                    <s.Container ai={"center"} jc={"center"} fd={"row"}>
+                    <div className="mint-gift-banner">
+                      ★ Mint 5 NFTs and get 1 extra NFT as a GIFT!
+                    </div>
+                    <div className="mint-action-area">
                       <StyledButton
                         disabled={claimingNft || !isLive ? 1 : 0}
                         onClick={(e) => {
@@ -597,16 +459,58 @@ function App() {
                           getData();
                         }}
                       >
-                        {claimingNft ? "BUSY" : "MINT"}
+                        {claimingNft ? "BUSY..." : "MINT"}
                       </StyledButton>
-                    </s.Container>
+                    </div>
                   </>
                 )}
               </>
             )}
           </div>
+          <div className="mint-nft-strip" aria-hidden="true">
+            <div className="mint-nft-track">
+              <img src="/config/images/1.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/2.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/3.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/4.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/5.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/6.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/7.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/8.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/9.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/10.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/11.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/12.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/13.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/14.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/15.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/16.png" alt="" className="mint-nft-thumb" />
+              {/* duplicate for seamless loop */}
+              <img src="/config/images/1.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/2.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/3.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/4.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/5.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/6.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/7.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/8.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/9.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/10.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/11.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/12.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/13.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/14.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/15.png" alt="" className="mint-nft-thumb" />
+              <img src="/config/images/16.png" alt="" className="mint-nft-thumb" />
+            </div>
+          </div>
+
           <div className="mint-ticket-stub">
-            <span>🐧 Pinguin © 2026</span>
+            <div className="mint-stub-socials">
+              <a className="mint-stub-social-link" href="https://opensea.io/collection/pinguingame" target="_blank" rel="noopener noreferrer">OPENSEA</a>
+              <a className="mint-stub-social-link" href="https://wlchecker.pinguingame.com/" target="_blank" rel="noopener noreferrer">WHITELIST CHECKER</a>
+              <a className="mint-stub-social-link" href="https://tracker.pinguingame.com/" target="_blank" rel="noopener noreferrer">YIELD TRACKER</a>
+            </div>
             <div className="mint-stub-socials">
               <a className="mint-stub-social-link" href="https://x.com/pinguinHQ" target="_blank" rel="noopener noreferrer">TWITTER</a>
               <a className="mint-stub-social-link" href="https://discord.gg/pinguin" target="_blank" rel="noopener noreferrer">DISCORD</a>
