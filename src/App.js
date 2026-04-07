@@ -3,15 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
-import styled, { keyframes } from "styled-components";
-import ReactDOM from "react-dom";
+import styled from "styled-components";
 import Countdown from "react-countdown";
 import ReactGA from "react-ga4";
+import { PuckCanvas } from "./PuckCanvas";
 
 ReactGA.initialize("G-0HS7GKYZHX");
-
-const truncate = (input, len) =>
-  input.length > len ? `${input.substring(0, len)}...` : input;
 
 const StyledTextDescription = styled(s.TextDescription)`
   text-align: center;
@@ -162,49 +159,7 @@ export const StyledRoundButton = styled.button`
   }
 `;
 
-export const ResponsiveWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: stretched;
-  align-items: stretched;
-  width: 100%;
-  @media (min-width: 769px) {
-    flex-direction: row;
-  }
-  @media (max-width: 768px) {
-    padding: 0 !important;
-    flex: unset;
-  }
-`;
 
-export const StyledLogo = styled.img`
-  width: 200px;
-  @media (min-width: 767px) {
-    width: 300px;
-  }
-  transition: width 0.5s;
-  transition: height 0.5s;
-`;
-
-export const StyledImg = styled.img`
-  box-shadow: 0px 5px 11px 2px rgba(0, 0, 0, 0.7);
-  background-color: rgb(22 23 1 / 51%);
-  border-radius: 20px;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  width: 300px;
-
-  transition: width 0.5s;
-
-  @media (max-width: 1378px) {
-    width: 250px;
-  }
-
-  @media (max-width: 1250px) {
-    width: 200px;
-  }
-`;
 
 export const StyledLink = styled.a`
   color: var(--secondary);
@@ -269,111 +224,7 @@ const MintStartedText = styled.span`
   text-shadow: 0 0 20px rgba(0, 255, 204, 0.9);
 `;
 
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
 
-const fadeOut = keyframes`
-  from { opacity: 1; }
-  to { opacity: 0; }
-`;
-
-const TooltipWrapper = styled.div`
-  position: relative;
-  display: flex;
-  font-size: 20px;
-  align-items: center;
-  color: white;
-  cursor: pointer;
-  gap: 8px;
-
-  @media (max-width: 768px) {
-    font-size: 15px;
-  }
-`;
-
-const TooltipText = styled.div`
-  visibility: ${(props) => (props.show ? "visible" : "hidden")};
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  color: white;
-  margin-left: -60px;
-  opacity: ${(props) => (props.show ? 1 : 0)};
-  transition: opacity 0.3s;
-`;
-
-const Modal = styled.div`
-  display: ${(props) => (props.show ? "block" : "none")};
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  font-size: 17px;
-  height: 100%;
-  color: white;
-  background-color: rgb(73 73 73 / 56%);
-  animation: ${(props) => (props.show ? fadeIn : fadeOut)} 0.3s ease-out;
-
-  @media (max-width: 1378px) {
-    font-size: 15px;
-  }
-`;
-
-const ModalContent = styled.div`
-  background-color: #f0f0f0;
-  margin: 3% auto;
-  padding: 30px;
-  padding-right: 10px;
-  border-radius: 10px;
-  padding-bottom: 0px;
-  padding-top: 10px;
-  position: relative;
-  color: black;
-  border: 1px solid #888;
-  font-family: "Font4";
-  width: 70%;
-  display: flex;
-  flex-direction: column;
-
-  @media (max-width: 1378px) {
-    width: 90%;
-    padding: 10px;
-    padding-right: 10px;
-  }
-`;
-
-const CloseButton = styled.span`
-  color: black;
-  float: right;
-  position: absolute;
-  font-size: 50px;
-  margin-top: -10px;
-  right: 20px;
-  font-weight: bold;
-  &:hover,
-  &:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
-`;
-
-const InfoIcon = styled.img`
-  display: flex;
-  align-items: center;
-  width: 30px;
-  height: 30px;
-`;
 
 function App() {
   const dispatch = useDispatch();
@@ -383,8 +234,6 @@ function App() {
   const [feedback, setFeedback] = useState(``);
   const [isLive, setIsLive] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
-  const [isStakeModalOpen, setIsStakeModalOpen] = useState(false);
-  const [isContestModalOpen, setIsContestModalOpen] = useState(false);
   const [CONFIG, SET_CONFIG] = useState({
     CONTRACT_ADDRESS: "",
     SCAN_LINK: "",
@@ -408,29 +257,6 @@ function App() {
     alert("Minting is now live!");
   };
 
-  const handleStakeClick = () => {
-    setIsStakeModalOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const handleContestClick = () => {
-    setIsContestModalOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeStakeModal = (e) => {
-    if (e.target.id === "modal") {
-      setIsStakeModalOpen(false);
-      document.body.style.overflow = "auto";
-    }
-  };
-
-  const closeContestModal = (e) => {
-    if (e.target.id === "modal") {
-      setIsContestModalOpen(false);
-      document.body.style.overflow = "auto";
-    }
-  };
 
   const claimNFTs = () => {
     let cost = CONFIG.WEI_COST;
@@ -509,43 +335,20 @@ function App() {
   }, [blockchain.account]);
 
   return (
-    <s.Screen>
-      <s.Container
-        flex={1}
-        ai={"center"}
-        style={{
-          padding: 24,
-          backgroundImage: "url('/bg.png')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundColor: "black",
-        }}
-      >
-        <ResponsiveWrapper flex={1} style={{ padding: 24 }} test>
-          <s.Container
-            flex={1}
-            jc={"center"}
-            ai={"center"}
-            className="imageContainer"
-          >
-            <StyledImg alt={"Mechibis"} src={"/config/images/1.png"} />
-            <StyledImg alt={"Mechibis"} src={"/config/images/2.png"} />
-          </s.Container>
-          <s.SpacerLarge />
-          <s.Container
-            flex={2}
-            jc={"center"}
-            ai={"center"}
-            style={{
-              backgroundColor: "rgb(0 0 0 / 84%)",
-              padding: "36px 24px",
-              borderRadius: 24,
-              boxShadow: "#C0C0C0 0px 0px 15px 5px",
-            }}
-          >
-            <StyledTextTitle>Mechibis</StyledTextTitle>
+    <>
+      <div className="bg-halftone" />
+      <div className="stripe-top" />
+      <div className="stripe-bottom" />
+      <PuckCanvas />
+      <div className="mint-wrapper">
+        <div className="mint-ticket">
+          <div className="mint-ticket-header">
+            <span className="mint-ticket-header-title">PINGUIN — 1ST DROP</span>
+          </div>
+          <div className="mint-ticket-body">
+            <StyledTextTitle>Pinguin</StyledTextTitle>
 
-            <MintPhaseTitle>MAIN MINT</MintPhaseTitle>
+            <MintPhaseTitle>1st DROP</MintPhaseTitle>
 
             {!isLive && (
               <CountdownTimer
@@ -654,274 +457,6 @@ function App() {
                 }}
               ></div>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  maxWidth: "350px",
-                  width: "100%",
-                  padding: "10px 5px",
-                  fontSize: "30px",
-                  marginTop: "20px",
-                  marginBottom: "20px",
-                  fontFamily: "Font2",
-                  alignItems: "center",
-                }}
-              >
-                <div class="info-area">
-                  <TooltipWrapper onClick={handleStakeClick}>
-                    <InfoIcon
-                      src="/config/images/information.png"
-                      alt="Info Icon"
-                    />
-                    <span class="stakeInfo">Stake</span>
-                  </TooltipWrapper>
-                  <TooltipWrapper onClick={handleContestClick}>
-                    <InfoIcon
-                      src="/config/images/medal.png"
-                      alt="Trophy Icon"
-                    />
-                    <span class="stakeInfo">$5000 Contest</span>
-                  </TooltipWrapper>
-                  <Modal
-                    id="modal"
-                    show={isStakeModalOpen}
-                    onClick={closeStakeModal}
-                  >
-                    <ModalContent>
-                      {" "}
-                      <CloseButton
-                        onClick={() => {
-                          setIsStakeModalOpen(false);
-                          document.body.style.overflow = "auto";
-                        }}
-                      >
-                        &times;
-                      </CloseButton>
-                      <div className="modalStake">
-                        <h1 style={{ textAlign: "center" }}>
-                          MECHIBIS STAKE SYSTEM
-                        </h1>
-                        <hr />
-
-                        <section>
-                          <h2>
-                            HOW MUCH CAN I EARN FROM STAKING MY MECHIBIS NFT?
-                          </h2>
-                          <p>
-                            Depending on its Core Power, each NFT generates
-                            between $10 and $40 monthly.
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>WHAT DETERMINES MY NFT’S STAKE REWARD?</h2>
-                          <p>
-                            Stake rewards are based on your NFT’s Core Power, a
-                            unique value embedded in the NFT metadata.
-                          </p>
-                          <p>
-                            Core Power also defines your monthly Passive Income.
-                            For example, if your NFT’s Core Power is 40, it
-                            means it will generate $40 in Passive Income per
-                            month.
-                          </p>
-                          <p>
-                            You can view this value by checking the NFT details
-                            in MetaMask or using the Power Scanner tool.
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>HOW IS MY NFT’S CORE POWER DECIDED?</h2>
-                          <p>
-                            Each NFT’s Core Power is assigned randomly during
-                            minting. Whether you mint a powerful NFT or a lower
-                            Core Power one depends entirely on luck.
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>HOW DO I STAKE MY MECHIBIS?</h2>
-                          <ul>
-                            <li>
-                              Verify your wallet and NFT in the #holder-verify
-                              channel after mint.
-                            </li>
-                            <li>
-                              Fill out the stake registration form shared in the
-                              #holder-announcements channel.
-                            </li>
-                            <li>
-                              HOLD your NFT and don’t list it on any
-                              marketplace.
-                            </li>
-                          </ul>
-                          <p>
-                            Your NFT remains in your wallet at all times, giving
-                            you full control.
-                          </p>
-                          <p>
-                            Unlike other systems, staking does not require
-                            transferring your NFT to a pool wallet.
-                          </p>
-                          <p>
-                            You can exit the staking system anytime by simply
-                            listing or transferring your NFT – no extra steps
-                            required.
-                          </p>
-                          <p>
-                            <strong>Important:</strong> Our Snapshot Software
-                            scans NFTs 3 times daily. If your NFT is listed on a
-                            marketplace, your wallet will be permanently
-                            disqualified from staking rewards – even for
-                            unlisted NFTs.
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>HOW ARE REWARDS PAID?</h2>
-                          <ul>
-                            <li>
-                              Your total monthly stake income is split into
-                              three payouts (1/4 each), sent every 7 days to
-                              your wallet holding the NFT.
-                            </li>
-                            <li>
-                              No additional action is required; payouts are
-                              fully automatic and made in ETH.
-                            </li>
-                            <li>
-                              Once Passive Income payments begin, your USDT
-                              earnings will be converted to ETH based on the
-                              current ETH price and sent to your wallet.
-                            </li>
-                            <li>
-                              Check our announcements after each payout to
-                              confirm the transaction.
-                            </li>
-                          </ul>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>HOW IS THE STAKE POOL FUNDED?</h2>
-                          <p>
-                            The stake pool is backed by a $700,000 treasury,
-                            allocated to low-risk crypto strategies (staking +
-                            yield farming). This ensures consistent and stable
-                            payouts.
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>HOW LONG WILL STAKING BE AVAILABLE?</h2>
-                          <p>
-                            The staking system will run until June 2026. After
-                            that, we transition to Play & Earn, with the release
-                            of the Mechibis Game.
-                          </p>
-                        </section>
-                        <hr />
-                      </div>
-                    </ModalContent>
-                  </Modal>
-                  <Modal
-                    id="modal"
-                    show={isContestModalOpen}
-                    onClick={closeContestModal}
-                  >
-                    <ModalContent>
-                      <CloseButton
-                        onClick={() => {
-                          setIsContestModalOpen(false);
-                          document.body.style.overflow = "auto";
-                        }}
-                      >
-                        &times;
-                      </CloseButton>
-                      <div className="modalStake">
-                        <h1 style={{ textAlign: "center" }}>
-                          Mechibis - $5000 Mint Contest
-                        </h1>
-                        <hr />
-
-                        <section>
-                          <h2>$5000 MINT CONTEST</h2>
-                          <p>
-                            We’re rewarding those who mint during the Main Mint!
-                            (Mint will remain open for 4 hours or until sold
-                            out.)
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <h2>PRIZES</h2>
-                          <ul>
-                            <li>🥇 $1500</li>
-                            <li>🥈 $1200</li>
-                            <li>🥉 $1000</li>
-                            <li>4️⃣ $600</li>
-                            <li>5️⃣ $400</li>
-                            <li>6️⃣ $200</li>
-                            <li>7️⃣ $100</li>
-                          </ul>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <p>Between 26 June - 13:00 UTC and 17:00 UTC</p>
-                          <p>
-                            You will earn 1 ticket for every mint you make
-                            between 13:00 UTC and 17:00 UTC.
-                          </p>
-                          <p>
-                            For example, if you mint 5 NFTs, you will get 5
-                            tickets.
-                          </p>
-                          <p>More Tickets = More Luck</p>
-                          <p>
-                            Only mints made in the Main Mint will be
-                            eligible.
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <p>
-                            After minting, be sure to fill out the form to match
-                            your wallet address with your username:
-                          </p>
-                          <p>
-                            <a
-                              href="https://dyno.gg/form/c967e6a7"
-                              target="_blank"
-                            >
-                              https://dyno.gg/form/c967e6a7
-                            </a>
-                          </p>
-                        </section>
-                        <hr />
-
-                        <section>
-                          <p>
-                            A random draw will be held after the Mint ends and
-                            prizes will be distributed to the winners.
-                          </p>
-                          <p>Good luck Mechibis World!</p>
-                        </section>
-                        <hr />
-                      </div>
-                    </ModalContent>
-                  </Modal>
-                </div>
-              </div>
             </s.Container>
 
             {Number(data.totalSupply) >= CONFIG.MAX_SUPPLY ? (
@@ -1069,48 +604,17 @@ function App() {
                 )}
               </>
             )}
-          </s.Container>
-          <s.SpacerLarge />
-          <s.Container
-            flex={1}
-            jc={"center"}
-            ai={"center"}
-            className="imageContainer"
-          >
-            <StyledImg alt={"Mechibis"} src={"/config/images/3.png"} />
-            <StyledImg alt={"Mechibis"} src={"/config/images/4.png"} />
-          </s.Container>
-        </ResponsiveWrapper>
-        <footer class="footer">
-          <a
-            href="https://discord.gg/mechibis"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/config/images/discord.png" alt="Discord" class="icon" />
-          </a>
-          <a
-            href="https://x.com/mechibisgame"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/config/images/twitter.png" alt="Twitter" class="icon" />
-          </a>
-          <a
-            href="https://opensea.io/collection/mechibisgame"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="/config/images/opensea.png"
-              style={{ width: 65, height: 65 }}
-              alt="OpenSea"
-              class="icon"
-            />
-          </a>
-        </footer>
-      </s.Container>
-    </s.Screen>
+          </div>
+          <div className="mint-ticket-stub">
+            <span>🐧 Pinguin © 2026</span>
+            <div className="mint-stub-socials">
+              <a className="mint-stub-social-link" href="https://x.com/pinguinHQ" target="_blank" rel="noopener noreferrer">TWITTER</a>
+              <a className="mint-stub-social-link" href="https://discord.gg/pinguin" target="_blank" rel="noopener noreferrer">DISCORD</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
