@@ -289,7 +289,7 @@ body::after {
 .mint-wrapper {
   position: relative;
   z-index: 1;
-  min-height: 100%;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -799,8 +799,46 @@ div {
 }
 
 .info-modal-body ul li {
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid rgba(26,26,26,0.1);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.info-modal-body ul li span {
+  flex: 1;
+}
+
+.info-modal-body ul li a {
+  color: var(--teal);
+  text-decoration: underline;
+}
+
+.modal-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--navy);
+}
+
+.modal-icon--red   { color: var(--red); }
+.modal-icon--green { color: #137e25; }
+.modal-icon--navy  { color: var(--navy); }
+
+.modal-footer-note {
+  margin-top: 20px !important;
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
 }
 
 .info-modal-body::-webkit-scrollbar {
@@ -815,6 +853,22 @@ div {
 }
 
 /* Gift banner */
+.gift-banner-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.mint-gift-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 .mint-gift-banner {
   font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
   font-size: clamp(0.75rem, 2vw, 0.88rem);

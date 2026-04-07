@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { PiGlobeDuotone, PiCalendarDotsDuotone, PiCurrencyEthDuotone, PiDiamondDuotone, PiCoinsDuotone, PiHandFistDuotone, PiGiftDuotone, PiLinkDuotone, PiWarningDiamondDuotone, PiCheckCircleDuotone, PiStarDuotone, PiYoutubeLogo, PiSparkleDuotone, PiArrowRightDuotone } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
@@ -288,7 +289,7 @@ function App() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>
+              <PiYoutubeLogo style={{ width: 18, height: 18, flexShrink: 0 }} />
               Watch Trailer
             </a>
           </div>
@@ -304,7 +305,7 @@ function App() {
             </div>
 
             <Countdown
-              date={new Date(Date.UTC(2025, 3, 9, 14, 0, 0))}
+              date={new Date(Date.UTC(2026, 3, 9, 14, 0, 0))}
               onComplete={() => setIsLive(true)}
               renderer={({ days, hours, minutes, seconds, completed }) => {
                 if (completed) {
@@ -362,37 +363,88 @@ function App() {
                   <div className="info-modal-body">
                     {activeModal === 'mintInfo' && (
                       <>
-                        <h3>What is Mechibis?</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-                        <h3>Mint Details</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                        <h3>Smart Contract</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <ul>
+                          <li><PiCalendarDotsDuotone className="modal-icon" /> <span><strong>Date:</strong> 9 April — 14:00 UTC</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /> <span><strong>Cost:</strong> 0.02 ETH</span></li>
+                          <li><PiDiamondDuotone className="modal-icon" /> <span><strong>Supply:</strong> 400 NFTs</span></li>
+                          <li><PiCoinsDuotone className="modal-icon" /> <span><strong>Hold &amp; Earn:</strong> Earn up to 0.005 ETH weekly for each NFT you hold.</span></li>
+                          <li><PiHandFistDuotone className="modal-icon" /> <span><strong>Max Mint per Wallet:</strong> 5</span></li>
+                          <li><PiGiftDuotone className="modal-icon" /> <span><strong>Bonus:</strong> Mint 5 NFTs and get 1 extra NFT as a GIFT!</span></li>
+                          <li><PiLinkDuotone className="modal-icon" /> <span><strong>Chain:</strong> ETH Mainnet</span></li>
+                        </ul>
+                        <h3>GTD &amp; FCFS Rules</h3>
+                        <ul>
+                          <li><PiWarningDiamondDuotone className="modal-icon modal-icon--red" /> <span>GTD and FCFS phases will start <strong>at the same time</strong>.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>160 NFTs reserved for GTD wallets for the first 30 minutes (1 per GTD wallet).</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>The remaining 240 NFTs will be available to FCFS from the start.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Max mint limit is <strong>5 per wallet</strong> for both GTD and FCFS.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>For GTD wallets: 1 guaranteed NFT + up to 4 additional NFTs from FCFS supply.</span></li>
+                        </ul>
+                        <h3>Important Notes</h3>
+                        <ul>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Hold &amp; Earn System activates immediately after the 1st Drop. <a href="https://discord.gg/pinguin" target="_blank" rel="noopener noreferrer">Details on Discord</a>.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>1st Drop is <strong>exclusive to PinguList (WL) owners</strong>. There will be NO Public Phase.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Your PinguList (WL) is valid for <strong>all drops</strong>, not just the 1st Drop.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Those who mint 5 NFTs should open a ticket and provide their mint wallet address to receive their gift NFT.</span></li>
+                        </ul>
+                        <p className="modal-footer-note"><PiStarDuotone className="modal-icon" /> Good luck Pinguins!</p>
                       </>
                     )}
                     {activeModal === 'contest' && (
                       <>
-                        <h3>About the Contest</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-                        <h3>Prizes</h3>
-                        <ul>
-                          <li>🥇 1st Place — $1000</li>
-                          <li>🥈 2nd Place — $500</li>
-                          <li>🥉 3rd Place — $300</li>
-                          <li>4th–10th — $200 each</li>
-                        </ul>
-                        <h3>How to Enter</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        TBA
                       </>
                     )}
                     {activeModal === 'holdEarn' && (
                       <>
-                        <h3>What is Hold & Earn?</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-                        <h3>How it Works</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat.</p>
-                        <h3>Rewards</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <h3>How Much Can I Earn By Holding My Pinguin NFT?</h3>
+                        <p>Depending on its Bounce Power, each NFT generates between 0.00125 ETH and 0.005 ETH per week.</p>
+
+                        <h3>What Determines My Earnings?</h3>
+                        <p>Your weekly ETH earnings are determined by your NFT's Bounce Power tier. There are 8 Bounce Power tiers in total and each tier has a fixed weekly reward amount:</p>
+                        <ul>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>100 Bounce Power → 0.00125 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>200 Bounce Power → 0.00175 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>300 Bounce Power → 0.00225 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>400 Bounce Power → 0.00275 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>500 Bounce Power → 0.00325 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>600 Bounce Power → 0.00375 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>700 Bounce Power → 0.00425 ETH / week</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>800 Bounce Power → 0.00500 ETH / week</span></li>
+                        </ul>
+                        <ul>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>The higher your Bounce Power, the higher your fixed weekly ETH reward.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>You can instantly check your Pinguin's Bounce Power by viewing its metadata on MetaMask.</span></li>
+                        </ul>
+
+                        <h3>How Is Bounce Power Determined?</h3>
+                        <p>Each NFT's Bounce Power is assigned completely at random during the minting process. Whether you mint a highly powerful Pinguin or one with a lower Bounce Power depends entirely on luck.</p>
+
+                        <h3>How Do I Join The System?</h3>
+                        <p>In our system, you are always in control. To get started, follow these 3 simple steps:</p>
+                        <ul>
+                          <li><PiArrowRightDuotone className="modal-icon modal-icon--navy" /><span>After minting, go to the #holder-verify channel to verify your wallet and NFT.</span></li>
+                          <li><PiArrowRightDuotone className="modal-icon modal-icon--navy" /><span>Fill out the stake registration form shared in the #holder-announcements channel.</span></li>
+                          <li><PiArrowRightDuotone className="modal-icon modal-icon--navy" /><span>Keep your NFT in your wallet and do not list it on any marketplace.</span></li>
+                        </ul>
+                        <ul>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span><strong>Full Control:</strong> Your NFT always remains in your own wallet.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span><strong>No Pools:</strong> Unlike other systems, you do not need to transfer your NFT to a pool or a smart contract.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span><strong>Easy Exit:</strong> If you decide to leave the system, no extra steps are required; simply transfer or list your NFT.</span></li>
+                        </ul>
+                        <ul>
+                          <li><PiWarningDiamondDuotone className="modal-icon modal-icon--red" /><span><strong>IMPORTANT WARNING:</strong> Holder wallets are monitored daily by our tracking system. Listing even a single Pinguin NFT on any marketplace will result in that wallet being permanently removed from the reward system, even if other Pinguins in the same wallet remain unlisted.</span></li>
+                        </ul>
+
+                        <h3>How Are Payments Made?</h3>
+                        <ul>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>Rewards are distributed weekly and sent directly to the wallet holding the NFT.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>All earnings are paid in ETH and no claim transaction or manual conversion is required on your side.</span></li>
+                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>After each weekly distribution, an update will be shared in the #payment-logs channel so holders can track and verify transactions.</span></li>
+                        </ul>
+
+                        <h3>How Long Will This System Last?</h3>
+                        <p>The Holder Rewards system will operate uninterrupted until April 2027. After that, our ecosystem will evolve into a "Play &amp; Earn" model.</p>
                       </>
                     )}
                   </div>
@@ -487,7 +539,7 @@ function App() {
                       </StyledDiv>
                     </div>
                                         <div className="mint-gift-banner">
-                      ★ Mint 5 NFTs and get 1 extra NFT as a GIFT!
+                      <PiSparkleDuotone className="gift-banner-icon" /> Mint 5 NFTs and get 1 extra NFT as a GIFT!
                     </div>
                     {feedback && (
                       <s.TextDescription
