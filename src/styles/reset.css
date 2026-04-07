@@ -451,6 +451,7 @@ body::after {
 @media (max-width: 520px) {
   .mint-wrapper {
     justify-content: flex-start;
+    padding-top: calc(38px + env(safe-area-inset-top, 0px) + var(--stripe-thickness));
   }
   .mint-ticket-header {
     padding: 14px 16px 10px;
@@ -633,7 +634,7 @@ div {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 15px;
   margin-bottom: 18px;
   width: 100%;
 }
@@ -698,6 +699,121 @@ div {
 }
 
 
+/* Info modals */
+.info-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.info-modal {
+  background: var(--cream);
+  border: 4px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 8px 8px 0 var(--ink);
+  width: 100%;
+  max-width: 620px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.info-modal-header {
+  background: var(--red);
+  border-bottom: 4px solid var(--ink);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.info-modal-title {
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  letter-spacing: 4px;
+  color: var(--cream);
+  text-shadow: 2px 2px 0 var(--ink);
+  text-transform: uppercase;
+}
+
+.info-modal-close {
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-size: 1.1rem;
+  color: var(--cream);
+  background: rgba(0,0,0,0.25);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+
+.info-modal-close:hover {
+  background: rgba(0,0,0,0.5);
+}
+
+.info-modal-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  font-family: 'Itim', Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.info-modal-body h3 {
+  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin: 20px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.info-modal-body h3:first-child {
+  margin-top: 0;
+}
+
+.info-modal-body p {
+  margin: 0 0 12px;
+}
+
+.info-modal-body ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.info-modal-body ul li {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(26,26,26,0.1);
+}
+
+.info-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.info-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.info-modal-body::-webkit-scrollbar-thumb {
+  background: var(--ink);
+  border-radius: 3px;
+}
+
 /* Gift banner */
 .mint-gift-banner {
   font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
@@ -738,4 +854,8 @@ div {
     padding: 20px 16px 16px;
   }
 }
+
+  #feedback {
+    margin-top:15px;
+  }
 

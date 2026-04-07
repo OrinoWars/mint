@@ -8,7 +8,7 @@ import Countdown from "react-countdown";
 import ReactGA from "react-ga4";
 import { PuckCanvas } from "./PuckCanvas";
 
-ReactGA.initialize("G-0HS7GKYZHX");
+ReactGA.initialize("G-L9PXVE5P5L");
 
 const StyledTextDescription = styled(s.TextDescription)`
   text-align: center;
@@ -167,6 +167,16 @@ function App() {
   const [feedback, setFeedback] = useState(``);
   const [isLive, setIsLive] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
+  const [activeModal, setActiveModal] = useState(null); // 'mintInfo' | 'contest' | 'holdEarn'
+
+  const openModal = (name) => {
+    setActiveModal(name);
+    document.body.style.overflow = "hidden";
+  };
+  const closeModal = () => {
+    setActiveModal(null);
+    document.body.style.overflow = "auto";
+  };
   const [CONFIG, SET_CONFIG] = useState({
     CONTRACT_ADDRESS: "",
     SCAN_LINK: "",
@@ -214,12 +224,8 @@ function App() {
       })
       .then((receipt) => {
         console.log(receipt);
-        document.getElementById("feedback").style.boxShadow =
-          "0px 4px 10px rgba(0, 0, 0, 0.5)";
-        document.getElementById("feedback").style.border =
-          "3px solid rgb(0 255 29 / 90%)";
         setFeedback(
-          `Mint successful! Verify your wallet on Discord to start Stake!`
+          `Mint successful! Verify your wallet on Discord to start Hold Earn!`
         );
         setClaimingNft(false);
         dispatch(fetchData(blockchain.account));
@@ -298,7 +304,7 @@ function App() {
             </div>
 
             <Countdown
-              date={new Date(Date.UTC(2026, 3, 9, 14, 0, 0))}
+              date={new Date(Date.UTC(2025, 3, 9, 14, 0, 0))}
               onComplete={() => setIsLive(true)}
               renderer={({ days, hours, minutes, seconds, completed }) => {
                 if (completed) {
@@ -334,10 +340,65 @@ function App() {
             />
 
             <div className="mint-info-buttons">
-              <button className="mint-info-btn mint-info-btn--navy">Mint Info</button>
-              <button className="mint-info-btn mint-info-btn--orange">$2000 Mint Contest</button>
-              <button className="mint-info-btn mint-info-btn--teal">Hold &amp; Earn System</button>
+              <button className="mint-info-btn mint-info-btn--navy" onClick={() => openModal('mintInfo')}>Mint Info</button>
+              <button className="mint-info-btn mint-info-btn--orange" onClick={() => openModal('contest')}>$2000 Mint Contest</button>
+              <button className="mint-info-btn mint-info-btn--teal" onClick={() => openModal('holdEarn')}>Hold &amp; Earn System</button>
             </div>
+
+            {activeModal && (
+              <div
+                className="info-modal-backdrop"
+                onClick={(e) => { if (e.target.className === 'info-modal-backdrop') closeModal(); }}
+              >
+                <div className="info-modal">
+                  <div className="info-modal-header">
+                    <span className="info-modal-title">
+                      {activeModal === 'mintInfo' && 'MINT INFO'}
+                      {activeModal === 'contest' && '$2000 MINT CONTEST'}
+                      {activeModal === 'holdEarn' && 'HOLD & EARN SYSTEM'}
+                    </span>
+                    <button className="info-modal-close" onClick={closeModal}>✕</button>
+                  </div>
+                  <div className="info-modal-body">
+                    {activeModal === 'mintInfo' && (
+                      <>
+                        <h3>What is Mechibis?</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                        <h3>Mint Details</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        <h3>Smart Contract</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                      </>
+                    )}
+                    {activeModal === 'contest' && (
+                      <>
+                        <h3>About the Contest</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                        <h3>Prizes</h3>
+                        <ul>
+                          <li>🥇 1st Place — $1000</li>
+                          <li>🥈 2nd Place — $500</li>
+                          <li>🥉 3rd Place — $300</li>
+                          <li>4th–10th — $200 each</li>
+                        </ul>
+                        <h3>How to Enter</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                      </>
+                    )}
+                    {activeModal === 'holdEarn' && (
+                      <>
+                        <h3>What is Hold & Earn?</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                        <h3>How it Works</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat.</p>
+                        <h3>Rewards</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="mint-info-table">
               {!(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
@@ -425,6 +486,9 @@ function App() {
                         </span>
                       </StyledDiv>
                     </div>
+                                        <div className="mint-gift-banner">
+                      ★ Mint 5 NFTs and get 1 extra NFT as a GIFT!
+                    </div>
                     {feedback && (
                       <s.TextDescription
                         id="feedback"
@@ -432,7 +496,7 @@ function App() {
                           textAlign: "center",
                           color: "var(--ink)",
                           border: "3px solid var(--ink)",
-                          background: claimingNft ? "var(--navy)" : "var(--teal)",
+                          background: claimingNft ? "var(--navy)" : "#137e25",
                           boxShadow: "4px 4px 0 var(--ink)",
                           borderRadius: "8px",
                           padding: "16px 20px",
@@ -447,9 +511,6 @@ function App() {
                         {feedback}
                       </s.TextDescription>
                     )}
-                    <div className="mint-gift-banner">
-                      ★ Mint 5 NFTs and get 1 extra NFT as a GIFT!
-                    </div>
                     <div className="mint-action-area">
                       <StyledButton
                         disabled={claimingNft || !isLive ? 1 : 0}
