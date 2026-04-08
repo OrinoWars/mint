@@ -162,6 +162,12 @@ body {
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--cream);
+  overflow: hidden;
+  height: 100%;
+  min-height: 100%;
+  min-height: -webkit-fill-available;
+  overscroll-behavior-y: none;
 }
 
 * {
@@ -184,6 +190,19 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
+#root {
+  height: 100%;
+  min-height: 0;
+  max-height: 100vh;
+  max-height: 100dvh;
+  max-height: -webkit-fill-available;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background-color: var(--cream);
+}
+
 /* ── Pinguin theme variables ── */
 :root {
   --cream: #f5e6c8;
@@ -201,6 +220,8 @@ html {
   background-color: var(--cream);
   color-scheme: light;
   overscroll-behavior-y: none;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Scanline overlay */
@@ -687,9 +708,10 @@ div {
   box-shadow: 1px 1px 0 var(--ink);
 }
 
-.mint-info-btn--navy   { background: var(--ink); }
+.mint-info-btn--navy   { background: #a2748c; }
 .mint-info-btn--orange { background: var(--orange); }
 .mint-info-btn--teal   { background: var(--teal); }
+
 
 @media (max-width: 480px) {
   .mint-info-buttons {
