@@ -16,7 +16,7 @@ const PHASES = [
   {
     name: "GTD",
     label: "Guaranteed",
-    start: new Date(Date.UTC(2026, 3, 28, 19, 44, 0)), // Apr 30 13:00 UTC
+    start: new Date(Date.UTC(2026, 3, 30, 13, 0, 0)), // Apr 30 13:00 UTC
     weiCost: 6000000000000000,
     displayCost: 0.006,
     maxAmount: 3,
@@ -315,7 +315,7 @@ function App() {
         console.log(receipt);
         document.getElementById("feedback").style.background = "#248307";
         setFeedback(
-          `Mint successful! Verify your wallet on Discord to start Hold Earn!`
+          `Mint successful! Verify your wallet on Discord to start Stake!`
         );
         setClaimingNft(false);
         dispatch(fetchData(blockchain.account));
