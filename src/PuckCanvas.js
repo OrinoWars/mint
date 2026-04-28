@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-const COLORS = ['#d42b2b', '#f5c518', '#1e8a8a', '#e07b30', '#1a2b4a']
+const COLORS = ['#e91e8c', '#ffcc1f', '#7fc948', '#ff3ea5', '#5a2a8a']
 const COUNT = 14
 
 export function PuckCanvas() {
@@ -65,7 +65,7 @@ export function PuckCanvas() {
         ctx.fill()
         ctx.globalAlpha = 0.75
         ctx.lineWidth = 2
-        ctx.strokeStyle = '#1a1a1a'
+        ctx.strokeStyle = '#120a1f'
         ctx.stroke()
 
         ctx.globalAlpha = 0.5

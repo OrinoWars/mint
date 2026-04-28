@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { PiGlobeDuotone, PiCalendarDotsDuotone, PiCurrencyEthDuotone, PiDiamondDuotone, PiCoinsDuotone, PiHandFistDuotone, PiGiftDuotone, PiLinkDuotone, PiWarningDiamondDuotone, PiCheckCircleDuotone, PiStarDuotone, PiYoutubeLogo, PiSparkleDuotone, PiArrowRightDuotone, PiTrophyDuotone, PiMedalDuotone, PiClockCountdownDuotone, PiWalletDuotone, PiListChecksDuotone, PiExclamationMarkDuotone, PiCrownDuotone } from "react-icons/pi";
+import { PiCalendarDotsDuotone, PiCurrencyEthDuotone, PiDiamondDuotone, PiLinkDuotone, PiCheckCircleDuotone, PiStarDuotone, PiYoutubeLogo, PiSparkleDuotone, PiClockCountdownDuotone } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
@@ -7,48 +7,19 @@ import * as s from "./styles/globalStyles";
 import styled from "styled-components";
 import Countdown from "react-countdown";
 import ReactGA from "react-ga4";
-import { PuckCanvas } from "./PuckCanvas";
+import { BackgroundFX } from "./BackgroundFX";
 
-ReactGA.initialize("G-L9PXVE5P5L");
+ReactGA.initialize("G-9PKXFVYL92");
 
 const StyledTextDescription = styled(s.TextDescription)`
   text-align: center;
   width: 20px;
   font-size: 1.05rem;
   color: var(--ink);
-  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-family: 'Luckiest Guy', Verdana, sans-serif;
   letter-spacing: 2px;
 `;
 
-const MintPhaseTitle = styled(s.TextTitle)`
-  text-align: center;
-  color: var(--teal);
-  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
-  line-height: 1;
-  margin: 4px 0 16px 0;
-  padding: 0;
-`;
-
-const StyledTextTitle = styled(s.TextTitle)`
-  text-align: center;
-  color: var(--yellow);
-  font-size: clamp(3.2rem, 12vw, 7rem);
-  letter-spacing: 5px;
-  -webkit-text-stroke: 3px var(--ink);
-  text-shadow: 6px 8px 0 var(--red), 8px 10px 0 var(--ink);
-  text-transform: uppercase;
-  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
-  line-height: 0.9;
-  margin: 0 0 12px 0;
-  padding: 0;
-
-  @media (max-width: 768px) {
-    text-shadow: 3px 4px 0 var(--red), 4px 5px 0 var(--ink);
-  }
-`;
 
 const StyledDiv = styled.div`
   display: flex;
@@ -58,18 +29,26 @@ const StyledDiv = styled.div`
   padding: 12px 16px;
   align-items: center;
   font-size: 1.05rem;
-  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-family: 'Luckiest Guy', Verdana, sans-serif;
   letter-spacing: 3px;
-  color: var(--ink);
-  background: var(--cream);
+  color: var(--cream);
+  background: rgba(18, 10, 31, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 3px solid var(--ink);
-  border-radius: 6px;
-  box-shadow: 3px 3px 0 var(--ink);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--ink), 0 0 18px rgba(233, 30, 140, 0.18);
   margin-top: 8px;
 
+  & > span:first-child {
+    color: var(--cream);
+    opacity: 0.85;
+  }
+
   & > span:last-child:not([style]) {
-    color: var(--teal);
+    color: var(--yellow);
     font-size: 1.15rem;
+    text-shadow: 1px 1px 0 var(--ink);
   }
 
   @media (max-width: 768px) {
@@ -79,35 +58,39 @@ const StyledDiv = styled.div`
 `;
 
 export const StyledButton = styled.button`
-  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-family: 'Luckiest Guy', Verdana, sans-serif;
   font-size: 1.35rem;
-  letter-spacing: 4px;
+  letter-spacing: 5px;
   text-transform: uppercase;
   padding: 18px 56px;
   border: 3px solid var(--ink);
-  border-radius: 6px;
-  background: var(--red);
-  color: var(--cream);
+  border-radius: 14px;
+  background: var(--yellow);
+  color: var(--ink);
   cursor: pointer;
-  box-shadow: 4px 4px 0 var(--ink);
-  text-shadow: 1px 1px 0 var(--ink);
-  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow:
+    0 6px 0 var(--ink),
+    0 0 35px rgba(255, 204, 31, 0.45);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--ink);
+    transform: translateY(-3px) rotate(-1deg);
+    box-shadow:
+      0 10px 0 var(--ink),
+      0 0 55px rgba(255, 204, 31, 0.6);
   }
 
   &:active:not(:disabled) {
-    transform: translate(1px, 1px);
-    box-shadow: 2px 2px 0 var(--ink);
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 var(--ink);
   }
 
   &:disabled {
     opacity: 0.55;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 4px 4px 0 var(--ink);
+    box-shadow: 0 6px 0 var(--ink);
   }
 
   @media (max-width: 768px) {
@@ -117,26 +100,27 @@ export const StyledButton = styled.button`
 `;
 
 export const StyledRoundButton = styled.button`
-  font-family: 'Bangers', Impact, 'Arial Black', sans-serif;
+  font-family: 'Luckiest Guy', Verdana, sans-serif;
   font-size: 1rem;
   font-weight: bold;
   color: var(--ink);
-  background: var(--cream);
+  background: var(--yellow);
   width: 26px;
   height: 26px;
   border: 2px solid var(--ink);
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 2px 2px 0 var(--ink);
-  transition: transform 0.12s, box-shadow 0.12s;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
   line-height: 1;
 
   &:hover:not(:disabled) {
     transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--ink), 0 0 14px rgba(255, 204, 31, 0.5);
+    background: var(--cream);
   }
 
   &:active:not(:disabled) {
@@ -153,7 +137,7 @@ export const StyledRoundButton = styled.button`
 
 
 export const StyledLink = styled.a`
-  color: var(--secondary);
+  color: var(--magenta);
   text-decoration: none;
 `;
 
@@ -278,15 +262,84 @@ function App() {
   return (
     <>
       <div className="bg-halftone" />
+      <BackgroundFX />
       <div className="stripe-top" />
       <div className="stripe-bottom" />
-      <PuckCanvas />
+
+      {activeModal && (
+        <div
+          className="info-modal-backdrop"
+          onClick={(e) => { if (e.target.className === 'info-modal-backdrop') closeModal(); }}
+        >
+          <div className="info-modal">
+            <div className="info-modal-header">
+              <span className="info-modal-title">
+                {activeModal === 'mintInfo' && 'MINT INFO'}
+              </span>
+              <button className="info-modal-close" onClick={closeModal}>✕</button>
+            </div>
+            <div className="info-modal-body">
+              {activeModal === 'mintInfo' && (
+                <>
+                  <h3>Collection Details</h3>
+                  <ul>
+                    <li><PiDiamondDuotone className="modal-icon" /> <span><strong>Supply:</strong> 1,111 NFTs</span></li>
+                    <li><PiCalendarDotsDuotone className="modal-icon" /> <span><strong>Mint Date:</strong> 30 April — 13:00 UTC</span></li>
+                    <li><PiLinkDuotone className="modal-icon" /> <span><strong>Chain:</strong> Ethereum</span></li>
+                  </ul>
+
+                  <h3>Pricing</h3>
+                  <ul>
+                    <li>
+                      <PiCurrencyEthDuotone className="modal-icon modal-icon--green" />
+                      <span><strong>GTD Phase</strong> <span className="mint-phase-tag mint-phase-tag--gtd">Guaranteed</span></span>
+                      <span className="mint-phase-price">0.006 ETH</span>
+                    </li>
+                    <li>
+                      <PiCurrencyEthDuotone className="modal-icon modal-icon--orange" />
+                      <span><strong>FCFS Phase</strong> <span className="mint-phase-tag mint-phase-tag--fcfs">First Come</span></span>
+                      <span className="mint-phase-price">0.008 ETH</span>
+                    </li>
+                    <li>
+                      <PiCurrencyEthDuotone className="modal-icon" />
+                      <span><strong>Public Phase</strong> <span className="mint-phase-tag mint-phase-tag--pub">Open</span></span>
+                      <span className="mint-phase-price">0.011 ETH</span>
+                    </li>
+                  </ul>
+
+                  <h3>Mint Schedule</h3>
+                  <ul className="mint-schedule-list">
+                    <li>
+                      <PiClockCountdownDuotone className="modal-icon modal-icon--green" />
+                      <span><strong>GTD</strong></span>
+                      <span className="mint-schedule-time">April 30 · 13:00 UTC</span>
+                    </li>
+                    <li>
+                      <PiClockCountdownDuotone className="modal-icon modal-icon--orange" />
+                      <span><strong>FCFS</strong></span>
+                      <span className="mint-schedule-time">April 30 · 14:00 UTC</span>
+                    </li>
+                    <li>
+                      <PiClockCountdownDuotone className="modal-icon" />
+                      <span><strong>PUBLIC</strong></span>
+                      <span className="mint-schedule-time">April 30 · 15:00 UTC</span>
+                    </li>
+                  </ul>
+
+                  <p className="modal-footer-note"><PiStarDuotone className="modal-icon" /> Good luck Pebbles!</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mint-wrapper">
         <div className="mint-ticket">
           <div className="mint-ticket-header">
             <a
               className="mint-header-trailer"
-              href="https://www.youtube.com/watch?v=HTIZYjeU9lE"
+              href="https://www.youtube.com/watch?v=FlTxCTOywaE"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -296,7 +349,10 @@ function App() {
           </div>
           <div className="mint-ticket-body">
             <div className="mint-hero-block">
-              <StyledTextTitle>Pinguin</StyledTextTitle>
+              <h1 className="mint-title">
+                <span className="mint-title-w1">PEBBLE</span><br />
+                <span className="mint-title-w2">MAYHEM</span>
+              </h1>
             </div>
 
             <div className="mint-lights-row" aria-hidden="true">
@@ -343,165 +399,8 @@ function App() {
 
             <div className="mint-info-buttons">
               <button className="mint-info-btn mint-info-btn--navy" onClick={() => openModal('mintInfo')}>Mint Info</button>
-              <button className="mint-info-btn mint-info-btn--orange" onClick={() => openModal('contest')}>$2000 Mint Contest</button>
-              <button className="mint-info-btn mint-info-btn--teal" onClick={() => openModal('holdEarn')}>Hold &amp; Earn System</button>
             </div>
 
-            {activeModal && (
-              <div
-                className="info-modal-backdrop"
-                onClick={(e) => { if (e.target.className === 'info-modal-backdrop') closeModal(); }}
-              >
-                <div className="info-modal">
-                  <div className="info-modal-header">
-                    <span className="info-modal-title">
-                      {activeModal === 'mintInfo' && 'MINT INFO'}
-                      {activeModal === 'contest' && '$2000 MINT CONTEST'}
-                      {activeModal === 'holdEarn' && 'HOLD & EARN SYSTEM'}
-                    </span>
-                    <button className="info-modal-close" onClick={closeModal}>✕</button>
-                  </div>
-                  <div className="info-modal-body">
-                    {activeModal === 'mintInfo' && (
-                      <>
-                        <ul>
-                          <li><PiCalendarDotsDuotone className="modal-icon" /> <span><strong>Date:</strong> 9 April — 14:00 UTC</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /> <span><strong>Cost:</strong> 0.01 ETH</span></li>
-                          <li><PiDiamondDuotone className="modal-icon" /> <span><strong>Supply:</strong> 400 NFTs</span></li>
-                          <li><PiCoinsDuotone className="modal-icon" /> <span><strong>Hold &amp; Earn:</strong> Earn up to 0.005 ETH weekly for each NFT you hold.</span></li>
-                          <li><PiHandFistDuotone className="modal-icon" /> <span><strong>Max Mint per Wallet:</strong> 5</span></li>
-                          <li><PiGiftDuotone className="modal-icon" /> <span><strong>Bonus:</strong> Mint 5 NFTs and get 1 extra NFT as a GIFT!</span></li>
-                          <li><PiLinkDuotone className="modal-icon" /> <span><strong>Chain:</strong> ETH Mainnet</span></li>
-                        </ul>
-                        <h3>GTD &amp; FCFS Rules</h3>
-                        <ul>
-                          <li><PiWarningDiamondDuotone className="modal-icon modal-icon--red" /> <span>GTD and FCFS phases will start <strong>at the same time</strong>.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>160 NFTs reserved for GTD wallets for the first 30 minutes (1 per GTD wallet).</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>The remaining 240 NFTs will be available to FCFS from the start.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Max mint limit is <strong>5 per wallet</strong> for both GTD and FCFS.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>For GTD wallets: 1 guaranteed NFT + up to 4 additional NFTs from FCFS supply.</span></li>
-                        </ul>
-                        <h3>Important Notes</h3>
-                        <ul>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Hold &amp; Earn System activates immediately after the 1st Drop. <a href="https://discord.gg/pinguin" target="_blank" rel="noopener noreferrer">Details on Discord</a>.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>1st Drop is <strong>exclusive to PinguList (WL) owners</strong>. There will be NO Public Phase.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Your PinguList (WL) is valid for <strong>all drops</strong>, not just the 1st Drop.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /> <span>Those who mint 5 NFTs should open a ticket and provide their mint wallet address to receive their gift NFT.</span></li>
-                        </ul>
-                        <p className="modal-footer-note"><PiStarDuotone className="modal-icon" /> Good luck Pinguins!</p>
-                      </>
-                    )}
-                    {activeModal === 'contest' && (
-                      <>
-                        <div className="contest-hero">
-                          <PiTrophyDuotone className="contest-hero-icon" />
-                          <p className="contest-hero-subtitle">First 1 Hour Mint Contest</p>
-                        </div>
-
-                        <div className="contest-alert">
-                          <PiClockCountdownDuotone className="modal-icon modal-icon--orange" />
-                          <span>The official Pinguin mint goes live on <strong>April 9th at 14:00 UTC</strong>. Collectors who complete their mint within the first hour of launch will secure their entry into a <strong>$2,000 prize pool</strong>.</span>
-                        </div>
-
-                        <h3>Prize Pool</h3>
-                        <ul className="contest-prizes">
-                          <li className="contest-prize contest-prize--gold">
-                            <PiCrownDuotone className="modal-icon" />
-                            <span><strong>1st Place</strong></span>
-                            <span className="prize-amount">$1,000</span>
-                          </li>
-                          <li className="contest-prize contest-prize--silver">
-                            <PiMedalDuotone className="modal-icon" />
-                            <span><strong>2nd Place</strong></span>
-                            <span className="prize-amount">$600</span>
-                          </li>
-                          <li className="contest-prize contest-prize--bronze">
-                            <PiMedalDuotone className="modal-icon" />
-                            <span><strong>3rd Place</strong></span>
-                            <span className="prize-amount">$400</span>
-                          </li>
-                        </ul>
-
-                        <h3>Entry Rules</h3>
-                        <ul>
-                          <li><PiClockCountdownDuotone className="modal-icon modal-icon--orange" /><span><strong>Eligibility:</strong> Only mints completed within the first hour (14:00 – 15:00 UTC) qualify for the contest.</span></li>
-                          <li><PiWalletDuotone className="modal-icon modal-icon--navy" /><span><strong>Limit:</strong> Maximum 5 NFTs per wallet.</span></li>
-                          <li><PiDiamondDuotone className="modal-icon modal-icon--teal" /><span><strong>Advantage:</strong> Each mint equals 1 entry.</span></li>
-                          <li><PiListChecksDuotone className="modal-icon modal-icon--navy" /><span><strong>Requirement:</strong> Only <strong>@PinguList (WL)</strong> owners can participate in the 1st Drop.</span></li>
-                        </ul>
-
-                        <div className="contest-cta">
-                          <PiExclamationMarkDuotone className="modal-icon modal-icon--red" />
-                          <span><strong>Critical Step:</strong> After minting, you must complete the wallet registration form so we can match your wallet address with your username.</span>
-                        </div>
-                        <a
-                          className="contest-register-btn"
-                          href="https://www.alphabot.app/first-1-hour-mint-contest-2000-in-prizes-gy2m5g"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <PiLinkDuotone /> Register Your Wallet
-                        </a>
-
-                        <p className="modal-footer-note"><PiSparkleDuotone className="modal-icon" /> Secure your position early, lock in your entries and take part in this elite competition. Good luck Pinguins!</p>
-                      </>
-                    )}
-                    {activeModal === 'holdEarn' && (
-                      <>
-                        <h3>How Much Can I Earn By Holding My Pinguin NFT?</h3>
-                        <p>Depending on its Bounce Power, each NFT generates between 0.00125 ETH and 0.005 ETH per week.</p>
-
-                        <h3>What Determines My Earnings?</h3>
-                        <p>Your weekly ETH earnings are determined by your NFT's Bounce Power tier. There are 8 Bounce Power tiers in total and each tier has a fixed weekly reward amount:</p>
-                        <ul>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>100 Bounce Power → 0.00125 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>200 Bounce Power → 0.00175 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>300 Bounce Power → 0.00225 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>400 Bounce Power → 0.00275 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>500 Bounce Power → 0.00325 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>600 Bounce Power → 0.00375 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>700 Bounce Power → 0.00425 ETH / week</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /><span>800 Bounce Power → 0.00500 ETH / week</span></li>
-                        </ul>
-                        <ul>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>The higher your Bounce Power, the higher your fixed weekly ETH reward.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>You can instantly check your Pinguin's Bounce Power by viewing its metadata on MetaMask.</span></li>
-                        </ul>
-
-                        <h3>How Is Bounce Power Determined?</h3>
-                        <p>Each NFT's Bounce Power is assigned completely at random during the minting process. Whether you mint a highly powerful Pinguin or one with a lower Bounce Power depends entirely on luck.</p>
-
-                        <h3>How Do I Join The System?</h3>
-                        <p>In our system, you are always in control. To get started, follow these 3 simple steps:</p>
-                        <ul>
-                          <li><PiArrowRightDuotone className="modal-icon modal-icon--navy" /><span>After minting, go to the #holder-verify channel to verify your wallet and NFT.</span></li>
-                          <li><PiArrowRightDuotone className="modal-icon modal-icon--navy" /><span>Fill out the stake registration form shared in the #holder-announcements channel.</span></li>
-                          <li><PiArrowRightDuotone className="modal-icon modal-icon--navy" /><span>Keep your NFT in your wallet and do not list it on any marketplace.</span></li>
-                        </ul>
-                        <ul>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span><strong>Full Control:</strong> Your NFT always remains in your own wallet.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span><strong>No Pools:</strong> Unlike other systems, you do not need to transfer your NFT to a pool or a smart contract.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span><strong>Easy Exit:</strong> If you decide to leave the system, no extra steps are required; simply transfer or list your NFT.</span></li>
-                        </ul>
-                        <ul>
-                          <li><PiWarningDiamondDuotone className="modal-icon modal-icon--red" /><span><strong>IMPORTANT WARNING:</strong> Holder wallets are monitored daily by our tracking system. Listing even a single Pinguin NFT on any marketplace will result in that wallet being permanently removed from the reward system, even if other Pinguins in the same wallet remain unlisted.</span></li>
-                        </ul>
-
-                        <h3>How Are Payments Made?</h3>
-                        <ul>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>Rewards are distributed weekly and sent directly to the wallet holding the NFT.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>All earnings are paid in ETH and no claim transaction or manual conversion is required on your side.</span></li>
-                          <li><PiCheckCircleDuotone className="modal-icon modal-icon--green" /><span>After each weekly distribution, an update will be shared in the #payment-logs channel so holders can track and verify transactions.</span></li>
-                        </ul>
-
-                        <h3>How Long Will This System Last?</h3>
-                        <p>The Holder Rewards system will operate uninterrupted until April 2027. After that, our ecosystem will evolve into a "Play &amp; Earn" model.</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="mint-info-table">
               {!(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
@@ -532,7 +431,7 @@ function App() {
                   <hr className="mint-divider" />
                   <StyledDiv>
                     <span>SUPPLY</span>
-                    <span>400</span>
+                    <span>1111</span>
                   </StyledDiv>
                 </>
               )}
@@ -589,23 +488,20 @@ function App() {
                         </span>
                       </StyledDiv>
                     </div>
-                                        <div className="mint-gift-banner">
-                      <PiSparkleDuotone className="gift-banner-icon" /> Mint 5 NFTs and get 1 extra NFT as a GIFT!
-                    </div>
+
                     {feedback && (
                       <s.TextDescription
                         id="feedback"
                         style={{
                           textAlign: "center",
-                          color: "var(--ink)",
                           border: "3px solid var(--ink)",
-                          background: claimingNft ? "var(--navy)" : "#ac0d0d",
-                          boxShadow: "4px 4px 0 var(--ink)",
-                          borderRadius: "8px",
+                          background: claimingNft ? "var(--purple)" : "#ac0d0d",
+                          boxShadow: "4px 4px 0 var(--ink), 0 0 28px rgba(233, 30, 140, 0.35)",
+                          borderRadius: "10px",
                           padding: "16px 20px",
-                          fontFamily: "'Bangers', Impact, 'Arial Black', sans-serif",
+                          fontFamily: "'Luckiest Guy', Verdana, sans-serif",
                           fontSize: "1rem",
-                          letterSpacing: "2px",
+                          letterSpacing: "3px",
                           marginBottom: "16px",
                           color: "var(--cream)",
                           textShadow: "1px 1px 0 var(--ink)",
@@ -671,13 +567,12 @@ function App() {
 
           <div className="mint-ticket-stub">
             <div className="mint-stub-socials">
-              <a className="mint-stub-social-link" href="https://opensea.io/collection/pinguingame" target="_blank" rel="noopener noreferrer">OPENSEA</a>
-              <a className="mint-stub-social-link" href="https://wlchecker.pinguingame.com/" target="_blank" rel="noopener noreferrer">WHITELIST CHECKER</a>
-              <a className="mint-stub-social-link" href="https://tracker.pinguingame.com/" target="_blank" rel="noopener noreferrer">YIELD TRACKER</a>
+              <a className="mint-stub-social-link" href="https://opensea.io/collection/" target="_blank" rel="noopener noreferrer">OPENSEA</a>
+              <a className="mint-stub-social-link" href="https://wlchecker.pebblemayhem.com/" target="_blank" rel="noopener noreferrer">WHITELIST CHECKER</a>
             </div>
             <div className="mint-stub-socials">
-              <a className="mint-stub-social-link" href="https://x.com/pinguinHQ" target="_blank" rel="noopener noreferrer">TWITTER</a>
-              <a className="mint-stub-social-link" href="https://discord.gg/pinguin" target="_blank" rel="noopener noreferrer">DISCORD</a>
+              <a className="mint-stub-social-link" href="https://x.com/PebbleMayhem" target="_blank" rel="noopener noreferrer">TWITTER</a>
+              <a className="mint-stub-social-link" href="https://discord.gg/pebblemayhem" target="_blank" rel="noopener noreferrer">DISCORD</a>
             </div>
           </div>
         </div>

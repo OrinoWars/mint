@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pebble Mayhem - Coming soon</title>
+    <meta name="description" content="Pebble Mayhem — the mayhem is coming. A chaotic 1–5 player co-op roguelite.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%A8%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #120a1f;
+            --deep: #1c1030;
+            --purple: #5a2a8a;
+            --magenta: #e91e8c;
+            --pink: #ff3ea5;
+            --yellow: #ffcc1f;
+            --yellow-deep: #f5a623;
+            --green: #7fc948;
+            --red: #d93b3b;
+            --cream: #f5efe0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--ink);
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--cream);
+            cursor: crosshair;
+        }
+
+        /* ===== Hero art — image is 1024x532 (~1.92:1), close to 16:9.
+           Use object-fit: cover so it fills the screen fully. A subtle
+           blurred bleed behind catches ultrawide / portrait edges. */
+        .bleed {
+            position: fixed;
+            inset: -6%;
+            z-index: 0;
+            background-image: url("assets/hero.png");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: blur(70px) saturate(1.25) brightness(0.5);
+            transform: scale(1.15);
+        }
+
+        .hero {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 30% 55%; /* keeps the main pebble knight in frame on any aspect */
+            pointer-events: none;
+            animation: heroBreathe 12s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        @keyframes heroBreathe {
+            0%   { transform: scale(1.02) translate(0, 0); }
+            100% { transform: scale(1.06) translate(-0.8%, -0.5%); }
+        }
+
+        /* Dark film grade + pink/green atmospheric glows */
+        .grade {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 70% 30%, rgba(255, 62, 165, 0.18) 0%, transparent 45%),
+                radial-gradient(ellipse at 25% 75%, rgba(127, 201, 72, 0.10) 0%, transparent 45%),
+                radial-gradient(ellipse at center, transparent 30%, rgba(12, 6, 25, 0.45) 75%, rgba(12, 6, 25, 0.85) 100%),
+                linear-gradient(180deg, rgba(12,6,25,0.55) 0%, rgba(12,6,25,0.05) 30%, rgba(12,6,25,0.05) 55%, rgba(12,6,25,0.85) 100%);
+        }
+
+        .grade-top {
+            position: fixed;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 70% 35%, rgba(233, 30, 140, 0.14) 0%, transparent 40%);
+            mix-blend-mode: screen;
+        }
+
+        /* Scanlines */
+        .scan {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 48;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.08) 0 2px,
+                transparent 2px 4px
+            );
+            opacity: 0.5;
+        }
+
+        /* Grain */
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 49;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* ===== Content layer ===== */
+        main {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.55rem 1.2rem;
+            background: rgba(18, 10, 31, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 2px solid var(--yellow);
+            border-radius: 999px;
+            font-family: 'Luckiest Guy', Verdana, sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.22em;
+            color: var(--yellow);
+            text-transform: uppercase;
+            box-shadow: 0 0 30px rgba(255, 204, 31, 0.35), inset 0 0 20px rgba(255, 204, 31, 0.08);
+            animation: badgePulse 2.4s ease-in-out infinite;
+            margin-bottom: 1.8rem;
+        }
+
+        .badge .dot {
+            width: 10px; height: 10px;
+            background: var(--red);
+            border-radius: 50%;
+            box-shadow: 0 0 14px var(--red);
+            animation: blink 1.1s steps(2) infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.25; } }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: translateY(0); box-shadow: 0 0 30px rgba(255, 204, 31, 0.35), inset 0 0 20px rgba(255, 204, 31, 0.08); }
+            50%      { transform: translateY(-5px); box-shadow: 0 0 55px rgba(255, 204, 31, 0.55), inset 0 0 20px rgba(255, 204, 31, 0.12); }
+        }
+
+        /* Title */
+        .title-wrap {
+            position: relative;
+            filter: drop-shadow(0 20px 50px rgba(0,0,0,0.75));
+        }
+
+        .title {
+            font-family: 'Luckiest Guy', Verdana, sans-serif;
+            font-size: clamp(4rem, 14vw, 12rem);
+            line-height: 0.9;
+            letter-spacing: 0.02em;
+            color: var(--cream);
+            position: relative;
+            display: inline-block;
+        }
+
+        .title .word {
+            display: inline-block;
+            transform-origin: center;
+        }
+
+        /* Title: 3D chunky extrude — cartoon arcade game logo vibe */
+        .title .w1 {
+            color: var(--yellow);
+            transform: rotate(-4deg);
+            animation: wobble1 3.4s ease-in-out infinite;
+            -webkit-text-stroke: 5px var(--ink);
+            text-shadow:
+                1px 1px 0 #a64a0a,
+                2px 2px 0 #a64a0a,
+                3px 3px 0 #a64a0a,
+                4px 4px 0 #a64a0a,
+                5px 5px 0 #a64a0a,
+                6px 6px 0 #a64a0a,
+                7px 7px 0 #a64a0a,
+                8px 8px 0 #a64a0a,
+                9px 9px 0 var(--ink),
+                10px 10px 0 var(--ink),
+                14px 18px 30px rgba(0,0,0,0.7);
+        }
+
+        .title .w2 {
+            color: var(--cream);
+            transform: rotate(3deg);
+            animation: wobble2 3.8s ease-in-out infinite;
+            -webkit-text-stroke: 5px var(--ink);
+            text-shadow:
+                1px 1px 0 #8b6ac4,
+                2px 2px 0 #8b6ac4,
+                3px 3px 0 #8b6ac4,
+                4px 4px 0 #8b6ac4,
+                5px 5px 0 #8b6ac4,
+                6px 6px 0 #8b6ac4,
+                7px 7px 0 #8b6ac4,
+                8px 8px 0 #8b6ac4,
+                9px 9px 0 var(--ink),
+                10px 10px 0 var(--ink),
+                14px 18px 30px rgba(0,0,0,0.7);
+        }
+
+        @keyframes wobble1 {
+            0%,100% { transform: rotate(-4deg) translateY(0); }
+            50%     { transform: rotate(-2deg) translateY(-10px); }
+        }
+        @keyframes wobble2 {
+            0%,100% { transform: rotate(3deg) translateY(0); }
+            50%     { transform: rotate(5deg) translateY(-6px); }
+        }
+
+        /* Coming soon */
+        .soon {
+            margin-top: 2.2rem;
+            font-family: 'Luckiest Guy', Verdana, sans-serif;
+            font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+            letter-spacing: 0.3em;
+            color: var(--cream);
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            padding: 0.4rem 1.6rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .soon::before, .soon::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 44px;
+            height: 3px;
+            background: var(--magenta);
+            box-shadow: 0 0 14px var(--magenta);
+        }
+        .soon::before { right: 100%; }
+        .soon::after  { left: 100%; }
+
+        .soon .glitch {
+            color: var(--magenta);
+            display: inline-block;
+            animation: glitch 3.2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0,0); }
+            92% { transform: translate(-2px, 1px); color: var(--yellow); }
+            94% { transform: translate(2px, -1px); color: var(--green); }
+            96% { transform: translate(-1px, 0); color: var(--magenta); }
+        }
+
+        /* Tagline */
+        .tagline {
+            margin-top: 1.1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+            letter-spacing: 0.38em;
+            color: var(--cream);
+            text-transform: uppercase;
+            /* crisp 1px ink outline + soft dark halo for legibility on any bg */
+            text-shadow:
+                -1px -1px 0 var(--ink),
+                 1px -1px 0 var(--ink),
+                -1px  1px 0 var(--ink),
+                 1px  1px 0 var(--ink),
+                 0 0 10px rgba(0, 0, 0, 0.9),
+                 0 3px 14px rgba(0, 0, 0, 0.85);
+        }
+
+        .tagline b {
+            color: var(--yellow);
+            font-weight: 700;
+        }
+
+        /* CTA */
+        .cta-row {
+            margin-top: 2.6rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            font-family: 'Luckiest Guy', Verdana, sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 1rem 1.8rem;
+            border: 3px solid var(--ink);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--ink);
+            background: var(--yellow);
+            box-shadow:
+                0 6px 0 var(--ink),
+                0 0 35px rgba(255, 204, 31, 0.45);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) rotate(-1deg);
+            box-shadow: 0 10px 0 var(--ink), 0 0 55px rgba(255, 204, 31, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 var(--ink);
+        }
+
+        .btn.ghost {
+            background: rgba(18, 10, 31, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            color: var(--cream);
+            border-color: var(--cream);
+            box-shadow: 0 6px 0 rgba(245, 239, 224, 0.25);
+        }
+
+        .btn.ghost:hover {
+            background: var(--magenta);
+            border-color: var(--ink);
+            color: var(--cream);
+            box-shadow: 0 10px 0 var(--ink), 0 0 45px var(--magenta);
+        }
+
+        /* ===== Corner info ===== */
+        .corner {
+            position: fixed;
+            z-index: 20;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.32em;
+            color: rgba(245, 239, 224, 0.7);
+            text-transform: uppercase;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+        }
+
+        .corner.tl { top: 1.5rem; left: 1.5rem; }
+        .corner.tr { top: 1.5rem; right: 1.5rem; }
+        .corner.bl { bottom: 1.5rem; left: 1.5rem; }
+        .corner.br { bottom: 1.5rem; right: 1.5rem; }
+
+        .corner span { color: var(--yellow); }
+
+        /* Click pebble spawn container */
+        .sparks { position: fixed; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
+
+        .pebble {
+            position: fixed;
+            pointer-events: none;
+            width: 54px;
+            height: 60px;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.55));
+            will-change: transform, opacity;
+            transform-origin: center center;
+        }
+
+        .pebble svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible;
+        }
+
+        /* ===== Mobile ===== */
+        @media (max-width: 640px) {
+            html, body { overflow-y: auto; }
+            main { min-height: 100vh; padding: 5rem 1.25rem 6rem; }
+            .title { font-size: 4rem; }
+            .title .w1,
+            .title .w2 { -webkit-text-stroke: 2px var(--ink); }
+            .soon::before, .soon::after { width: 22px; }
+            .corner { font-size: 0.62rem; letter-spacing: 0.22em; }
+            /* On tall portrait screens, shift to keep main pebble visible */
+            .hero { object-position: 32% 55%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bleed"></div>
+    <img class="hero" src="assets/hero.png" alt="">
+    <div class="grade"></div>
+    <div class="grade-top"></div>
+    <div class="scan"></div>
+
+    <main>
+        <div class="badge">
+            <span class="dot"></span>
+            <span>Hell Fungus Rising</span>
+        </div>
+
+        <div class="title-wrap">
+            <h1 class="title">
+                <span class="word w1">PEBBLE</span><br>
+                <span class="word w2">MAYHEM</span>
+            </h1>
+        </div>
+
+        <div class="soon">
+            Coming <span class="glitch">Soon</span>
+        </div>
+
+        <p class="tagline">
+            SCAVENGE BY <b>DAY</b> &nbsp;·&nbsp; SURVIVE THE <b>NIGHT</b> &nbsp;·&nbsp; 1–5 PLAYER CO-OP
+        </p>
+
+        <div class="cta-row">
+            <a class="btn" href="http://discord.gg/pebblemayhem" target="_blank" rel="noopener">
+                ⚔ Join the Chaos
+            </a>
+        </div>
+    </main>
+
+    <div class="corner tl">PEBBLE <span>MAYHEM</span></div>
+    <div class="corner tr"><span>COMING SOON</span> · 2026</div>
+    <div class="corner br">THE KING <span>CALLS</span></div>
+
+    <div class="sparks" id="sparks" aria-hidden="true"></div>
+    <div class="noise"></div>
+
+    <script>
+        // Parallax — bleed drifts slow, hero drifts a bit more, title counter-drifts
+        const bleed = document.querySelector('.bleed');
+        const hero = document.querySelector('.hero');
+        const titleWrap = document.querySelector('.title-wrap');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+            bleed.style.translate = `${-x * 6}px ${-y * 4}px`;
+            hero.style.translate = `${-x * 10}px ${-y * 6}px`;
+            titleWrap.style.translate = `${x * 8}px ${y * 5}px`;
+        });
+
+        // Click = pebble character burst (plain / crown / mohawk / rock)
+        const sparks = document.getElementById('sparks');
+
+        const PEBBLE_SVGS = [
+            // Plain pebble (teeth smile)
+            `<svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="30" cy="42" rx="22" ry="25" fill="#f5efe0" stroke="#120a1f" stroke-width="4.5"/>
+                <circle cx="22" cy="38" r="2.6" fill="#120a1f"/>
+                <circle cx="38" cy="38" r="2.6" fill="#120a1f"/>
+                <path d="M 22 48 Q 30 55 38 48 L 38 50 L 22 50 Z" fill="#120a1f"/>
+                <rect x="26" y="48" width="3" height="4" fill="#f5efe0"/>
+                <rect x="31" y="48" width="3" height="4" fill="#f5efe0"/>
+            </svg>`,
+            // Crown pebble (the king)
+            `<svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="30" cy="44" rx="22" ry="24" fill="#f5efe0" stroke="#120a1f" stroke-width="4.5"/>
+                <path d="M 10 26 L 14 10 L 22 22 L 30 6 L 38 22 L 46 10 L 50 26 Z" fill="#ffcc1f" stroke="#120a1f" stroke-width="4" stroke-linejoin="round"/>
+                <circle cx="30" cy="18" r="2" fill="#e91e8c"/>
+                <circle cx="23" cy="42" r="2.5" fill="#120a1f"/>
+                <circle cx="37" cy="42" r="2.5" fill="#120a1f"/>
+                <path d="M 23 50 Q 30 55 37 50" stroke="#120a1f" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </svg>`,
+            // Mohawk pebble (the chicken-hawk)
+            `<svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="30" cy="45" rx="22" ry="24" fill="#f5efe0" stroke="#120a1f" stroke-width="4.5"/>
+                <path d="M 20 24 L 22 6 L 28 18 L 32 4 L 36 18 L 40 8 L 42 24 Z" fill="#d93b3b" stroke="#120a1f" stroke-width="3.5" stroke-linejoin="round"/>
+                <circle cx="23" cy="42" r="2.5" fill="#120a1f"/>
+                <circle cx="37" cy="42" r="2.5" fill="#120a1f"/>
+                <ellipse cx="30" cy="52" rx="4" ry="3" fill="#ffcc1f" stroke="#120a1f" stroke-width="2"/>
+            </svg>`,
+            // Raw rock (no face)
+            `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 10 30 Q 6 18 16 11 Q 27 4 37 10 Q 52 12 53 26 Q 56 42 44 49 Q 28 55 18 50 Q 5 44 10 30 Z" fill="#7a6990" stroke="#120a1f" stroke-width="4.5" stroke-linejoin="round"/>
+                <path d="M 18 22 Q 24 18 30 22" stroke="#5a4c70" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M 34 36 Q 40 34 44 38" stroke="#5a4c70" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>`,
+            // Small grey rock alt
+            `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 12 32 Q 10 20 22 14 Q 34 10 44 18 Q 52 28 48 40 Q 40 50 28 48 Q 14 46 12 32 Z" fill="#4a3a60" stroke="#120a1f" stroke-width="4.5" stroke-linejoin="round"/>
+                <circle cx="26" cy="26" r="2" fill="#2d2342"/>
+                <circle cx="38" cy="34" r="1.8" fill="#2d2342"/>
+            </svg>`,
+        ];
+
+        function spawnPebble(x, y) {
+            const el = document.createElement('div');
+            el.className = 'pebble';
+            el.innerHTML = PEBBLE_SVGS[Math.floor(Math.random() * PEBBLE_SVGS.length)];
+            const scale = 0.65 + Math.random() * 0.75;
+            el.style.left = (x - 27) + 'px';
+            el.style.top = (y - 30) + 'px';
+            sparks.appendChild(el);
+
+            let vx = (Math.random() - 0.5) * 18;
+            let vy = -(7 + Math.random() * 10);
+            const g = 0.65;
+            let rot = (Math.random() - 0.5) * 60;
+            const rotV = (Math.random() - 0.5) * 28;
+            let dx = 0, dy = 0;
+            let t = 0;
+            const life = 70 + Math.random() * 25;
+            const floorY = window.innerHeight - y + 40;
+
+            function step() {
+                dx += vx;
+                dy += vy;
+                vy += g;
+                // Bounce off the ground once for extra chaos
+                if (dy > floorY && vy > 0) {
+                    dy = floorY;
+                    vy = -vy * 0.45;
+                    vx *= 0.7;
+                }
+                rot += rotV;
+                const lifeRatio = t / life;
+                el.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${scale})`;
+                el.style.opacity = lifeRatio > 0.75 ? Math.max(0, 1 - (lifeRatio - 0.75) * 4) : 1;
+                t++;
+                if (t < life) requestAnimationFrame(step);
+                else el.remove();
+            }
+            requestAnimationFrame(step);
+        }
+
+        document.addEventListener('click', (e) => {
+            // Skip clicks on actual links/buttons so UX still works
+            if (e.target.closest('a, button')) return;
+            const count = 5 + Math.floor(Math.random() * 4);
+            for (let i = 0; i < count; i++) {
+                spawnPebble(e.clientX, e.clientY);
+            }
+        });
+    </script>
+</body>
+</html>

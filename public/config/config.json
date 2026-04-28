@@ -6,13 +6,13 @@
     "SYMBOL": "ETH",
     "ID": 1
   },
-  "NFT_NAME": "Pinguin",
-  "SYMBOL": "Pingu",
-  "MAX_SUPPLY": 400,
-  "WEI_COST": 10000000000000000,
-  "DISPLAY_COST": 0.01,
+  "NFT_NAME": "Pebble Mayhem",
+  "SYMBOL": "PEBBLE",
+  "MAX_SUPPLY": 1111,
+  "WEI_COST": 6000000000000000,
+  "DISPLAY_COST": 0.006,
   "GAS_LIMIT": 285000,
   "MARKETPLACE": "Opensea",
-  "MARKETPLACE_LINK": "https://opensea.io/collection/pinguingame",
+  "MARKETPLACE_LINK": "https://opensea.io/collection/",
   "SHOW_BACKGROUND": true
 }
