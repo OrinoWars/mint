@@ -11,6 +11,50 @@ import { BackgroundFX } from "./BackgroundFX";
 
 ReactGA.initialize("G-9PKXFVYL92");
 
+// ── Mint phases ────────────────────────────────────────────────────────────
+const PHASES = [
+  {
+    name: "GTD",
+    label: "Guaranteed",
+    start: new Date(Date.UTC(2026, 3, 30, 13, 0, 0)), // Apr 30 13:00 UTC
+    weiCost: 6000000000000000,
+    displayCost: 0.006,
+    color: "var(--green)",
+  },
+  {
+    name: "FCFS",
+    label: "First Come",
+    start: new Date(Date.UTC(2026, 3, 30, 14, 0, 0)), // Apr 30 14:00 UTC
+    weiCost: 8000000000000000,
+    displayCost: 0.008,
+    color: "var(--yellow-deep)",
+  },
+  {
+    name: "PUBLIC",
+    label: "Public Sale",
+    start: new Date(Date.UTC(2026, 3, 30, 15, 0, 0)), // Apr 30 15:00 UTC
+    weiCost: 11000000000000000,
+    displayCost: 0.011,
+    color: "var(--magenta)",
+  },
+];
+
+function getActivePhase() {
+  const now = new Date();
+  let active = null;
+  for (const phase of PHASES) {
+    if (now >= phase.start) active = phase;
+  }
+  return active; // null = not started yet
+}
+
+function getNextPhase(current) {
+  if (!current) return PHASES[0];
+  const idx = PHASES.findIndex((p) => p.name === current.name);
+  return idx < PHASES.length - 1 ? PHASES[idx + 1] : null;
+}
+// ───────────────────────────────────────────────────────────────────────────
+
 const StyledTextDescription = styled(s.TextDescription)`
   text-align: center;
   width: 20px;
@@ -153,6 +197,7 @@ function App() {
   const [isLive, setIsLive] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
   const [activeModal, setActiveModal] = useState(null); // 'mintInfo' | 'contest' | 'holdEarn'
+  const [activePhase, setActivePhase] = useState(getActivePhase);
 
   const openModal = (name) => {
     setActiveModal(name);
@@ -240,6 +285,11 @@ function App() {
     }
   };
 
+  const applyPhaseToConfig = (config, phase) => {
+    if (!phase) return config;
+    return { ...config, WEI_COST: phase.weiCost, DISPLAY_COST: phase.displayCost };
+  };
+
   const getConfig = async () => {
     const configResponse = await fetch("/config/config.json", {
       headers: {
@@ -248,8 +298,28 @@ function App() {
       },
     });
     const config = await configResponse.json();
-    SET_CONFIG(config);
+    const phase = getActivePhase();
+    SET_CONFIG(applyPhaseToConfig(config, phase));
+    if (phase) {
+      setActivePhase(phase);
+      setIsLive(true);
+    }
   };
+
+  // Phase transition watcher — checks every 15 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const phase = getActivePhase();
+      setActivePhase((prev) => {
+        if (prev?.name !== phase?.name) {
+          SET_CONFIG((c) => applyPhaseToConfig(c, phase));
+          if (phase) setIsLive(true);
+        }
+        return phase;
+      });
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     getConfig();
@@ -361,13 +431,17 @@ function App() {
               ))}
             </div>
 
+            {/* ── Pre-launch countdown (GTD start) ── */}
             <Countdown
-              date={new Date(Date.UTC(2026, 3, 9, 14, 0, 0))}
-              onComplete={() => setIsLive(true)}
+              date={PHASES[0].start}
+              onComplete={() => {
+                const phase = PHASES[0];
+                setActivePhase(phase);
+                setIsLive(true);
+                SET_CONFIG((c) => applyPhaseToConfig(c, phase));
+              }}
               renderer={({ days, hours, minutes, seconds, completed }) => {
-                if (completed) {
-                  return null;
-                }
+                if (completed) return null;
                 return (
                   <div className="countdown-wrap">
                     <h2 className="countdown-title">Time Left Until Mint</h2>
@@ -390,53 +464,97 @@ function App() {
                       </div>
                     </div>
                     <p className="launch-utc">
-                      Launch: <strong>9 April 2026, 14:00 UTC</strong>
+                      GTD Phase: <strong>30 April 2026, 13:00 UTC</strong>
                     </p>
                   </div>
                 );
               }}
             />
 
+            {/* ── Active phase badge + next-phase countdown ── */}
+            {activePhase && (
+              <div className="phase-status-wrap">
+                <div
+                  className="phase-badge"
+                  style={{ "--phase-color": activePhase.color }}
+                >
+                  <span className="phase-badge-dot" />
+                  <span className="phase-badge-name">{activePhase.name}</span>
+                  <span className="phase-badge-label">{activePhase.label}</span>
+                  <span className="phase-badge-price">{activePhase.displayCost} ETH</span>
+                </div>
+                {getNextPhase(activePhase) && (
+                  <Countdown
+                    date={getNextPhase(activePhase).start}
+                    onComplete={() => {
+                      const next = getNextPhase(activePhase);
+                      if (next) {
+                        setActivePhase(next);
+                        SET_CONFIG((c) => applyPhaseToConfig(c, next));
+                      }
+                    }}
+                    renderer={({ hours, minutes, seconds, completed }) => {
+                      if (completed) return null;
+                      const next = getNextPhase(activePhase);
+                      return (
+                        <p className="phase-next-label">
+                          <PiClockCountdownDuotone style={{ verticalAlign: "middle", marginRight: 4 }} />
+                          {next.name} phase in{" "}
+                          <strong>
+                            {String(hours).padStart(2, "0")}:
+                            {String(minutes).padStart(2, "0")}:
+                            {String(seconds).padStart(2, "0")}
+                          </strong>
+                        </p>
+                      );
+                    }}
+                  />
+                )}
+              </div>
+            )}
+
             <div className="mint-info-buttons">
               <button className="mint-info-btn mint-info-btn--navy" onClick={() => openModal('mintInfo')}>Mint Info</button>
             </div>
 
 
-            <div className="mint-info-table">
-              {!(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
-                <StyledDiv>
-                  <span>PRICE</span>
-                  <span>{CONFIG.DISPLAY_COST} ETH</span>
-                </StyledDiv>
-              )}
-              {isLive &&
-                !(blockchain.account === "" || blockchain.smartContract === null) &&
-                !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
+            {activePhase && (
+              <div className="mint-info-table">
+                {!(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
+                  <StyledDiv>
+                    <span>PRICE · {activePhase.name}</span>
+                    <span>{CONFIG.DISPLAY_COST} ETH</span>
+                  </StyledDiv>
+                )}
+                {isLive &&
+                  !(blockchain.account === "" || blockchain.smartContract === null) &&
+                  !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
+                    <>
+                      <hr className="mint-divider" />
+                      <StyledDiv>
+                        <span>MINTED</span>
+                        <span>
+                          {data.totalSupply > 0
+                            ? `${data.totalSupply} / ${CONFIG.MAX_SUPPLY}`
+                            : `0 / ${CONFIG.MAX_SUPPLY}`}
+                        </span>
+                      </StyledDiv>
+                    </>
+                  )}
+                {(!isLive ||
+                  blockchain.account === "" ||
+                  blockchain.smartContract === null) && (
                   <>
                     <hr className="mint-divider" />
                     <StyledDiv>
-                      <span>MINTED</span>
-                      <span>
-                        {data.totalSupply > 0
-                          ? `${data.totalSupply} / ${CONFIG.MAX_SUPPLY}`
-                          : `0 / ${CONFIG.MAX_SUPPLY}`}
-                      </span>
+                      <span>SUPPLY</span>
+                      <span>1111</span>
                     </StyledDiv>
                   </>
                 )}
-              {(!isLive ||
-                blockchain.account === "" ||
-                blockchain.smartContract === null) && (
-                <>
-                  <hr className="mint-divider" />
-                  <StyledDiv>
-                    <span>SUPPLY</span>
-                    <span>1111</span>
-                  </StyledDiv>
-                </>
-              )}
-              <hr className="mint-divider" />
-            </div>
+                <hr className="mint-divider" />
+              </div>
+            )}
 
             {Number(data.totalSupply) >= CONFIG.MAX_SUPPLY ? (
               <div className="mint-sold-out">SOLD OUT</div>
@@ -444,6 +562,7 @@ function App() {
               <>
                 {blockchain.account === "" ||
                 blockchain.smartContract === null ? (
+                  activePhase && (
                   <div className="mint-action-area">
                     <StyledButton
                       onClick={(e) => {
@@ -458,8 +577,10 @@ function App() {
                       <p className="mint-error-msg">{blockchain.errorMsg}</p>
                     )}
                   </div>
+                  )
                 ) : (
                   <>
+                    {activePhase && isLive && (
                     <div className="mint-amount-row">
                       <StyledDiv>
                         <span>AMOUNT</span>
@@ -488,6 +609,7 @@ function App() {
                         </span>
                       </StyledDiv>
                     </div>
+                    )}
 
                     {feedback && (
                       <s.TextDescription
