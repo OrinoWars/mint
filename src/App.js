@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { PiGlobeDuotone, PiCalendarDotsDuotone, PiCurrencyEthDuotone, PiDiamondDuotone, PiCoinsDuotone, PiHandFistDuotone, PiGiftDuotone, PiLinkDuotone, PiWarningDiamondDuotone, PiCheckCircleDuotone, PiStarDuotone, PiYoutubeLogo, PiSparkleDuotone, PiArrowRightDuotone } from "react-icons/pi";
+import { PiGlobeDuotone, PiCalendarDotsDuotone, PiCurrencyEthDuotone, PiDiamondDuotone, PiCoinsDuotone, PiHandFistDuotone, PiGiftDuotone, PiLinkDuotone, PiWarningDiamondDuotone, PiCheckCircleDuotone, PiStarDuotone, PiYoutubeLogo, PiSparkleDuotone, PiArrowRightDuotone, PiTrophyDuotone, PiMedalDuotone, PiClockCountdownDuotone, PiWalletDuotone, PiListChecksDuotone, PiExclamationMarkDuotone, PiCrownDuotone } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
@@ -306,7 +306,7 @@ function App() {
             </div>
 
             <Countdown
-              date={new Date(Date.UTC(2025, 3, 9, 14, 0, 0))}
+              date={new Date(Date.UTC(2026, 3, 9, 14, 0, 0))}
               onComplete={() => setIsLive(true)}
               renderer={({ days, hours, minutes, seconds, completed }) => {
                 if (completed) {
@@ -366,7 +366,7 @@ function App() {
                       <>
                         <ul>
                           <li><PiCalendarDotsDuotone className="modal-icon" /> <span><strong>Date:</strong> 9 April — 14:00 UTC</span></li>
-                          <li><PiCurrencyEthDuotone className="modal-icon" /> <span><strong>Cost:</strong> 0.02 ETH</span></li>
+                          <li><PiCurrencyEthDuotone className="modal-icon" /> <span><strong>Cost:</strong> 0.01 ETH</span></li>
                           <li><PiDiamondDuotone className="modal-icon" /> <span><strong>Supply:</strong> 400 NFTs</span></li>
                           <li><PiCoinsDuotone className="modal-icon" /> <span><strong>Hold &amp; Earn:</strong> Earn up to 0.005 ETH weekly for each NFT you hold.</span></li>
                           <li><PiHandFistDuotone className="modal-icon" /> <span><strong>Max Mint per Wallet:</strong> 5</span></li>
@@ -393,7 +393,57 @@ function App() {
                     )}
                     {activeModal === 'contest' && (
                       <>
-                        TBA
+                        <div className="contest-hero">
+                          <PiTrophyDuotone className="contest-hero-icon" />
+                          <p className="contest-hero-subtitle">First 1 Hour Mint Contest</p>
+                        </div>
+
+                        <div className="contest-alert">
+                          <PiClockCountdownDuotone className="modal-icon modal-icon--orange" />
+                          <span>The official Pinguin mint goes live on <strong>April 9th at 14:00 UTC</strong>. Collectors who complete their mint within the first hour of launch will secure their entry into a <strong>$2,000 prize pool</strong>.</span>
+                        </div>
+
+                        <h3>Prize Pool</h3>
+                        <ul className="contest-prizes">
+                          <li className="contest-prize contest-prize--gold">
+                            <PiCrownDuotone className="modal-icon" />
+                            <span><strong>1st Place</strong></span>
+                            <span className="prize-amount">$1,000</span>
+                          </li>
+                          <li className="contest-prize contest-prize--silver">
+                            <PiMedalDuotone className="modal-icon" />
+                            <span><strong>2nd Place</strong></span>
+                            <span className="prize-amount">$600</span>
+                          </li>
+                          <li className="contest-prize contest-prize--bronze">
+                            <PiMedalDuotone className="modal-icon" />
+                            <span><strong>3rd Place</strong></span>
+                            <span className="prize-amount">$400</span>
+                          </li>
+                        </ul>
+
+                        <h3>Entry Rules</h3>
+                        <ul>
+                          <li><PiClockCountdownDuotone className="modal-icon modal-icon--orange" /><span><strong>Eligibility:</strong> Only mints completed within the first hour (14:00 – 15:00 UTC) qualify for the contest.</span></li>
+                          <li><PiWalletDuotone className="modal-icon modal-icon--navy" /><span><strong>Limit:</strong> Maximum 5 NFTs per wallet.</span></li>
+                          <li><PiDiamondDuotone className="modal-icon modal-icon--teal" /><span><strong>Advantage:</strong> Each mint equals 1 entry.</span></li>
+                          <li><PiListChecksDuotone className="modal-icon modal-icon--navy" /><span><strong>Requirement:</strong> Only <strong>@PinguList (WL)</strong> owners can participate in the 1st Drop.</span></li>
+                        </ul>
+
+                        <div className="contest-cta">
+                          <PiExclamationMarkDuotone className="modal-icon modal-icon--red" />
+                          <span><strong>Critical Step:</strong> After minting, you must complete the wallet registration form so we can match your wallet address with your username.</span>
+                        </div>
+                        <a
+                          className="contest-register-btn"
+                          href="https://www.alphabot.app/first-1-hour-mint-contest-2000-in-prizes-gy2m5g"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <PiLinkDuotone /> Register Your Wallet
+                        </a>
+
+                        <p className="modal-footer-note"><PiSparkleDuotone className="modal-icon" /> Secure your position early, lock in your entries and take part in this elite competition. Good luck Pinguins!</p>
                       </>
                     )}
                     {activeModal === 'holdEarn' && (
