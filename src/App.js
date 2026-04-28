@@ -16,9 +16,10 @@ const PHASES = [
   {
     name: "GTD",
     label: "Guaranteed",
-    start: new Date(Date.UTC(2026, 3, 30, 13, 0, 0)), // Apr 30 13:00 UTC
+    start: new Date(Date.UTC(2026, 3, 28, 19, 44, 0)), // Apr 30 13:00 UTC
     weiCost: 6000000000000000,
     displayCost: 0.006,
+    maxAmount: 3,
     color: "var(--green)",
   },
   {
@@ -27,6 +28,7 @@ const PHASES = [
     start: new Date(Date.UTC(2026, 3, 30, 14, 0, 0)), // Apr 30 14:00 UTC
     weiCost: 8000000000000000,
     displayCost: 0.008,
+    maxAmount: 4,
     color: "var(--yellow-deep)",
   },
   {
@@ -35,6 +37,7 @@ const PHASES = [
     start: new Date(Date.UTC(2026, 3, 30, 15, 0, 0)), // Apr 30 15:00 UTC
     weiCost: 11000000000000000,
     displayCost: 0.011,
+    maxAmount: 4,
     color: "var(--magenta)",
   },
 ];
@@ -59,7 +62,7 @@ const StyledTextDescription = styled(s.TextDescription)`
   text-align: center;
   width: 20px;
   font-size: 1.05rem;
-  color: var(--ink);
+  color: var(--yellow);
   font-family: 'Luckiest Guy', Verdana, sans-serif;
   letter-spacing: 2px;
 `;
@@ -198,6 +201,62 @@ function App() {
   const [mintAmount, setMintAmount] = useState(1);
   const [activeModal, setActiveModal] = useState(null); // 'mintInfo' | 'contest' | 'holdEarn'
   const [activePhase, setActivePhase] = useState(getActivePhase);
+  const [wlStatus, setWlStatus] = useState(null); // null | 'gtd' | 'fcfs' | 'none' | 'checking'
+  const [wlConnecting, setWlConnecting] = useState(false);
+  const [walletPicker, setWalletPicker] = useState(null); // { wallets, context } | null
+
+  // EIP-6963: wallets announce themselves by RDNS — immune to isMetaMask spoofing
+  const eip6963Ref = useRef([]);
+  useEffect(() => {
+    const ICONS = { metamask: "/assets/metamask.png", phantom: "/assets/phantom.jpeg" };
+    const SUPPORTED = {
+      "io.metamask": { id: "metamask", name: "MetaMask", icon: ICONS.metamask },
+      "app.phantom":  { id: "phantom",  name: "Phantom",  icon: ICONS.phantom  },
+    };
+    const seen = new Set();
+    const handler = (event) => {
+      const { info, provider } = event.detail;
+      const meta = SUPPORTED[info.rdns];
+      if (meta && !seen.has(info.rdns)) {
+        seen.add(info.rdns);
+        eip6963Ref.current = [...eip6963Ref.current, { ...meta, provider }];
+      }
+    };
+    window.addEventListener("eip6963:announceProvider", handler);
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
+    return () => window.removeEventListener("eip6963:announceProvider", handler);
+  }, []);
+
+  const getAvailableWallets = () => {
+    const ICONS = { metamask: "/assets/metamask.png", phantom: "/assets/phantom.jpeg" };
+
+    // Use EIP-6963 results if any wallet responded — MetaMask first, Phantom second
+    const ORDER = ["metamask", "phantom"];
+    if (eip6963Ref.current.length > 0)
+      return [...eip6963Ref.current].sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+
+    // Fallback: legacy detection for older wallet versions
+    const list = [];
+    if (window.phantom?.ethereum)
+      list.push({ id: "phantom", name: "Phantom", provider: window.phantom.ethereum, icon: ICONS.phantom });
+    if (window.ethereum?.isMetaMask && !window.ethereum?.isPhantom)
+      list.push({ id: "metamask", name: "MetaMask", provider: window.ethereum, icon: ICONS.metamask });
+    return list;
+  };
+
+  const doConnect = (walletObj, context) => {
+    if (context === "wl") setWlConnecting(true);
+    dispatch(connect(walletObj.provider));
+    if (context === "main") getData();
+    setWalletPicker(null);
+  };
+
+  const openWalletPicker = (context) => {
+    const wallets = getAvailableWallets();
+    if (wallets.length === 0) { dispatch(connect(null)); return; }
+    if (wallets.length === 1) { doConnect(wallets[0], context); return; }
+    setWalletPicker({ wallets, context });
+  };
 
   const openModal = (name) => {
     setActiveModal(name);
@@ -263,25 +322,41 @@ function App() {
       });
   };
 
+  const phaseMax = activePhase?.maxAmount ?? 5;
+
   const decrementMintAmount = () => {
-    let newMintAmount = mintAmount - 1;
-    if (newMintAmount < 1) {
-      newMintAmount = 1;
-    }
-    setMintAmount(newMintAmount);
+    setMintAmount((prev) => Math.max(1, prev - 1));
   };
 
   const incrementMintAmount = () => {
-    let newMintAmount = mintAmount + 1;
-    if (newMintAmount > 5) {
-      newMintAmount = 5;
-    }
-    setMintAmount(newMintAmount);
+    setMintAmount((prev) => Math.min(phaseMax, prev + 1));
   };
 
   const getData = () => {
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
       dispatch(fetchData(blockchain.account));
+    }
+  };
+
+  const checkWL = async (address) => {
+    setWlStatus("checking");
+    try {
+      const [gtdRes, fcfsRes] = await Promise.all([
+        fetch("/gtd.txt"),
+        fetch("/fcfs.txt"),
+      ]);
+      const [gtdText, fcfsText] = await Promise.all([
+        gtdRes.text(),
+        fcfsRes.text(),
+      ]);
+      const normalize = (txt) =>
+        txt.split("\n").map((a) => a.trim().toLowerCase()).filter(Boolean);
+      const addr = address.toLowerCase();
+      if (normalize(gtdText).includes(addr)) return setWlStatus("gtd");
+      if (normalize(fcfsText).includes(addr)) return setWlStatus("fcfs");
+      setWlStatus("none");
+    } catch {
+      setWlStatus(null);
     }
   };
 
@@ -313,7 +388,7 @@ function App() {
       setActivePhase((prev) => {
         if (prev?.name !== phase?.name) {
           SET_CONFIG((c) => applyPhaseToConfig(c, phase));
-          if (phase) setIsLive(true);
+          if (phase) { setIsLive(true); setMintAmount(1); }
         }
         return phase;
       });
@@ -327,7 +402,17 @@ function App() {
 
   useEffect(() => {
     getData();
+    if (blockchain.account && !activePhase) {
+      checkWL(blockchain.account);
+    }
   }, [blockchain.account]);
+
+  // Stop the WL spinner when the connect attempt finishes (loading false = done)
+  useEffect(() => {
+    if (wlConnecting && !blockchain.loading) {
+      setWlConnecting(false);
+    }
+  }, [blockchain.loading]);
 
   return (
     <>
@@ -358,22 +443,22 @@ function App() {
                     <li><PiLinkDuotone className="modal-icon" /> <span><strong>Chain:</strong> Ethereum</span></li>
                   </ul>
 
-                  <h3>Pricing</h3>
+                  <h3>Pricing & Limits</h3>
                   <ul>
                     <li>
                       <PiCurrencyEthDuotone className="modal-icon modal-icon--green" />
                       <span><strong>GTD Phase</strong> <span className="mint-phase-tag mint-phase-tag--gtd">Guaranteed</span></span>
-                      <span className="mint-phase-price">0.006 ETH</span>
+                      <span className="mint-phase-price">0.006 ETH · max 3</span>
                     </li>
                     <li>
                       <PiCurrencyEthDuotone className="modal-icon modal-icon--orange" />
                       <span><strong>FCFS Phase</strong> <span className="mint-phase-tag mint-phase-tag--fcfs">First Come</span></span>
-                      <span className="mint-phase-price">0.008 ETH</span>
+                      <span className="mint-phase-price">0.008 ETH · max 4</span>
                     </li>
                     <li>
                       <PiCurrencyEthDuotone className="modal-icon" />
                       <span><strong>Public Phase</strong> <span className="mint-phase-tag mint-phase-tag--pub">Open</span></span>
-                      <span className="mint-phase-price">0.011 ETH</span>
+                      <span className="mint-phase-price">0.011 ETH · max 4</span>
                     </li>
                   </ul>
 
@@ -399,6 +484,38 @@ function App() {
                   <p className="modal-footer-note"><PiStarDuotone className="modal-icon" /> Good luck Pebbles!</p>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {walletPicker && (
+        <div className="wallet-picker-backdrop" onClick={() => setWalletPicker(null)}>
+          <div className="wallet-picker-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="wallet-picker-header">
+              <span className="wallet-picker-title">Select Wallet</span>
+              <button className="wallet-picker-close" onClick={() => setWalletPicker(null)}>✕</button>
+            </div>
+            <div className="wallet-picker-list">
+              {walletPicker.wallets.map((w) => (
+                <button
+                  key={w.id}
+                  className={`wallet-btn wallet-btn--${w.id}`}
+                  onClick={() => doConnect(w, walletPicker.context)}
+                >
+                  <span
+                    className="wallet-btn-icon"
+                    aria-hidden="true"
+                    style={w.icon ? {
+                      backgroundImage: `url(${w.icon})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundColor: "transparent",
+                    } : undefined}
+                  />
+                  {w.name}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -471,17 +588,17 @@ function App() {
               }}
             />
 
-            {/* ── Active phase badge + next-phase countdown ── */}
-            {activePhase && (
+            {/* ── Active phase badge + phase-end countdown ── */}
+            {activePhase && activePhase.name !== "PUBLIC" && blockchain.account && (
               <div className="phase-status-wrap">
                 <div
                   className="phase-badge"
-                  style={{ "--phase-color": activePhase.color }}
+                  style={{ "--phase-color": "var(--green)" }}
                 >
                   <span className="phase-badge-dot" />
-                  <span className="phase-badge-name">{activePhase.name}</span>
-                  <span className="phase-badge-label">{activePhase.label}</span>
-                  <span className="phase-badge-price">{activePhase.displayCost} ETH</span>
+                  <span className="phase-badge-name">
+                    Eligible for {activePhase.name} Phase
+                  </span>
                 </div>
                 {getNextPhase(activePhase) && (
                   <Countdown
@@ -495,11 +612,10 @@ function App() {
                     }}
                     renderer={({ hours, minutes, seconds, completed }) => {
                       if (completed) return null;
-                      const next = getNextPhase(activePhase);
                       return (
                         <p className="phase-next-label">
                           <PiClockCountdownDuotone style={{ verticalAlign: "middle", marginRight: 4 }} />
-                          {next.name} phase in{" "}
+                          {activePhase.name} ends in{" "}
                           <strong>
                             {String(hours).padStart(2, "0")}:
                             {String(minutes).padStart(2, "0")}:
@@ -517,6 +633,63 @@ function App() {
               <button className="mint-info-btn mint-info-btn--navy" onClick={() => openModal('mintInfo')}>Mint Info</button>
             </div>
 
+            {/* ── WL Checker — visible only before mint goes live ── */}
+            {!activePhase && (
+              <div className="wl-checker-wrap">
+                <p className="wl-checker-title">Whitelist Checker</p>
+                {!blockchain.account ? (
+                  wlConnecting ? (
+                    <div className="wl-spinner-wrap">
+                      <span className="wl-spinner" />
+                      <span className="wl-spinner-label">Connecting…</span>
+                    </div>
+                  ) : (
+                  <>
+                    <button
+                      className="wl-connect-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        openWalletPicker("wl");
+                      }}
+                    >
+                      Check WL Status
+                    </button>
+                    {blockchain.errorMsg !== "" && (
+                      <p className="wl-error-msg">{blockchain.errorMsg}</p>
+                    )}
+                  </>
+                  )
+                ) : (
+                  <div className="wl-result-wrap">
+                    <p className="wl-address">
+                      {blockchain.account.slice(0, 6)}…{blockchain.account.slice(-4)}
+                    </p>
+                    {wlStatus === "checking" && (
+                      <div className="wl-result wl-result--checking">Checking…</div>
+                    )}
+                    {wlStatus === "gtd" && (
+                      <div className="wl-result wl-result--gtd">
+                        <span className="wl-dot" />
+                        GTD Whitelist
+                      </div>
+                    )}
+                    {wlStatus === "fcfs" && (
+                      <div className="wl-result wl-result--fcfs">
+                        <span className="wl-dot" />
+                        FCFS Whitelist
+                      </div>
+                    )}
+                    {wlStatus === "none" && (
+                      <div className="wl-result wl-result--none">
+                        <span className="wl-dot" />
+                        Not on Whitelist
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
 
             {activePhase && (
               <div className="mint-info-table">
@@ -527,7 +700,7 @@ function App() {
                   </StyledDiv>
                 )}
                 {isLive &&
-                  !(blockchain.account === "" || blockchain.smartContract === null) &&
+                  blockchain.account &&
                   !(Number(data.totalSupply) >= CONFIG.MAX_SUPPLY) && (
                     <>
                       <hr className="mint-divider" />
@@ -541,9 +714,7 @@ function App() {
                       </StyledDiv>
                     </>
                   )}
-                {(!isLive ||
-                  blockchain.account === "" ||
-                  blockchain.smartContract === null) && (
+                {(!isLive || !blockchain.account) && (
                   <>
                     <hr className="mint-divider" />
                     <StyledDiv>
@@ -560,15 +731,13 @@ function App() {
               <div className="mint-sold-out">SOLD OUT</div>
             ) : (
               <>
-                {blockchain.account === "" ||
-                blockchain.smartContract === null ? (
+                {!blockchain.account ? (
                   activePhase && (
                   <div className="mint-action-area">
                     <StyledButton
                       onClick={(e) => {
                         e.preventDefault();
-                        dispatch(connect());
-                        getData();
+                        openWalletPicker("main");
                       }}
                     >
                       Connect Wallet
@@ -632,9 +801,10 @@ function App() {
                         {feedback}
                       </s.TextDescription>
                     )}
+                    {activePhase && isLive && (
                     <div className="mint-action-area">
                       <StyledButton
-                        disabled={claimingNft || !isLive ? 1 : 0}
+                        disabled={claimingNft || !isLive || !blockchain.smartContract ? 1 : 0}
                         onClick={(e) => {
                           e.preventDefault();
                           claimNFTs();
@@ -644,6 +814,7 @@ function App() {
                         {claimingNft ? "BUSY..." : "MINT"}
                       </StyledButton>
                     </div>
+                    )}
                   </>
                 )}
               </>
@@ -663,10 +834,6 @@ function App() {
               <img src="/config/images/10.png" alt="" className="mint-nft-thumb" />
               <img src="/config/images/11.png" alt="" className="mint-nft-thumb" />
               <img src="/config/images/12.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/13.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/14.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/15.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/16.png" alt="" className="mint-nft-thumb" />
               {/* duplicate for seamless loop */}
               <img src="/config/images/1.png" alt="" className="mint-nft-thumb" />
               <img src="/config/images/2.png" alt="" className="mint-nft-thumb" />
@@ -680,17 +847,13 @@ function App() {
               <img src="/config/images/10.png" alt="" className="mint-nft-thumb" />
               <img src="/config/images/11.png" alt="" className="mint-nft-thumb" />
               <img src="/config/images/12.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/13.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/14.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/15.png" alt="" className="mint-nft-thumb" />
-              <img src="/config/images/16.png" alt="" className="mint-nft-thumb" />
             </div>
           </div>
 
           <div className="mint-ticket-stub">
             <div className="mint-stub-socials">
               <a className="mint-stub-social-link" href="https://opensea.io/collection/" target="_blank" rel="noopener noreferrer">OPENSEA</a>
-              <a className="mint-stub-social-link" href="https://wlchecker.pebblemayhem.com/" target="_blank" rel="noopener noreferrer">WHITELIST CHECKER</a>
+              <a className="mint-stub-social-link" href="https://etherscan.io/address/" target="_blank" rel="noopener noreferrer">CONTRACT</a>
             </div>
             <div className="mint-stub-socials">
               <a className="mint-stub-social-link" href="https://x.com/PebbleMayhem" target="_blank" rel="noopener noreferrer">TWITTER</a>

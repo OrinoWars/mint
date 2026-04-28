@@ -35,7 +35,7 @@ const updateAccountRequest = (payload) => {
   };
 };
 
-export const connect = () => {
+export const connect = (provider = null) => {
   return async (dispatch) => {
     dispatch(connectRequest());
     const abiResponse = await fetch("/config/abi.json", {
@@ -52,9 +52,9 @@ export const connect = () => {
       },
     });
     const CONFIG = await configResponse.json();
-    const { ethereum } = window;
-    const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
-    if (metamaskIsInstalled) {
+    const ethereum = provider || window.ethereum;
+    const walletIsAvailable = !!ethereum;
+    if (walletIsAvailable) {
       Web3EthContract.setProvider(ethereum);
       let web3 = new Web3(ethereum);
       try {
@@ -64,38 +64,71 @@ export const connect = () => {
         const networkId = await ethereum.request({
           method: "net_version",
         });
-        if (networkId == CONFIG.NETWORK.ID) {
-          const SmartContractObj = new Web3EthContract(
-            abi,
-            CONFIG.CONTRACT_ADDRESS
-          );
+        const finalizeConnection = (acc) => {
+          let SmartContractObj = null;
+          try {
+            if (CONFIG.CONTRACT_ADDRESS) {
+              SmartContractObj = new Web3EthContract(abi, CONFIG.CONTRACT_ADDRESS);
+            }
+          } catch (e) {
+            SmartContractObj = null;
+          }
           dispatch(
             connectSuccess({
-              account: accounts[0],
+              account: acc,
               smartContract: SmartContractObj,
               web3: web3,
             })
           );
-          // Add listeners start
           ethereum.on("accountsChanged", (accounts) => {
             dispatch(updateAccount(accounts[0]));
           });
           ethereum.on("chainChanged", () => {
             window.location.reload();
           });
-          // Add listeners end
+        };
+
+        if (networkId == CONFIG.NETWORK.ID) {
+          finalizeConnection(accounts[0]);
         } else {
-          dispatch(connectFailed(`Change network to ${CONFIG.NETWORK.NAME}.`));
+          // Wrong network — try to switch automatically
+          try {
+            const chainHex = "0x" + parseInt(CONFIG.NETWORK.ID).toString(16);
+            await ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: chainHex }],
+            });
+            // Wait for any pending chainChanged events fired by the switch
+            // to settle before adding the reload listener, otherwise the
+            // switch itself triggers a page reload immediately after connect.
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            // Re-fetch accounts in case wallet updated them during the switch
+            const freshAccounts = await ethereum.request({ method: "eth_accounts" });
+            const finalAccount = (freshAccounts && freshAccounts[0]) || accounts[0];
+            if (!finalAccount) {
+              dispatch(connectFailed("No account found after network switch."));
+              return;
+            }
+            finalizeConnection(finalAccount);
+          } catch (switchErr) {
+            dispatch(connectFailed(`Please switch your wallet to ${CONFIG.NETWORK.NAME}.`));
+          }
         }
       } catch (err) {
-        dispatch(connectFailed("Something went wrong."));
+        if (err.code === 4001) {
+          dispatch(connectFailed("Connection rejected."));
+        } else if (err.code === -32002) {
+          dispatch(connectFailed("MetaMask is busy — open your wallet and approve the pending request."));
+        } else {
+          dispatch(connectFailed(err?.message || "Something went wrong."));
+        }
       }
     } else {
       if(isMobile()){
-        dispatch(connectFailed("Access the webpage using the MetaMask Browser."));
+        dispatch(connectFailed("Please open this page in your wallet's browser."));
       }
       else{
-        dispatch(connectFailed("Install Metamask."));
+        dispatch(connectFailed("Please install a Web3 wallet (MetaMask, Phantom, etc.)"));
       }
     }
   };
